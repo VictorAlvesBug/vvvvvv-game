@@ -1,39 +1,37 @@
+import { direcaoEnum } from './utilEnums.js';
+import { desenharTela } from './telaFactory.js';
+import createMovimentoPersonagem from './movimentoPersonagemFactory.js';
+import createGravidade from './gravidadeFactory.js';
+
 function createGame(gameBoard) {
-  const personagem = gameBoard.querySelector('#personagem');
+  const movimentoPersonagem = createMovimentoPersonagem(gameBoard);
+  const gravidade = createGravidade(gameBoard);
+  const qtdeVezesIterar = 8;
 
-  const passoAndar = 8;
-
-
-  const alternarGravidade = () => {
-    if (personagem.classList.contains('alternando')) {
-      return;
+  const atualizar = () => {
+    desenharTela(gameBoard);
+    for (let i = 0; i < qtdeVezesIterar; i++) {
+      gravidade.aplicarAcaoGravidade();
     }
-    personagem.classList.toggle('gravidade-invertida');
-    personagem.classList.add('alternando');
-
-    setTimeout(() => {
-      personagem.classList.remove('alternando');
-    }, 250);
-  };
-
-  const andarEsquerda = () => {
-    let personagemX = +personagem.style.left.replace('px', '');
-    personagemX -= passoAndar;
-    personagem.style.left = `${personagemX}px`;
-  };
-
-  const andarDireita = () => {
-    let personagemX = +personagem.style.left.replace('px', '');
-    personagemX += passoAndar;
-    personagem.style.left = `${personagemX}px`;
   };
 
   return {
-    Space: alternarGravidade,
-    ArrowUp: alternarGravidade,
-    ArrowDown: alternarGravidade,
-    ArrowLeft: andarEsquerda,
-    ArrowRight: andarDireita,
+    controles: {
+      Space: gravidade.alternarGravidade,
+      ArrowUp: gravidade.alternarGravidade,
+      ArrowDown: gravidade.alternarGravidade,
+      ArrowLeft: () => {
+        for (let i = 0; i < qtdeVezesIterar; i++) {
+        movimentoPersonagem.andar(direcaoEnum.ESQUERDA);
+        }
+      },
+      ArrowRight: () => {
+        for (let i = 0; i < qtdeVezesIterar; i++) {
+        movimentoPersonagem.andar(direcaoEnum.DIREITA);
+        }
+      },
+    },
+    atualizar,
   };
 }
 
