@@ -4,7 +4,15 @@ class GlobalVariables {
       return GlobalVariables.instancia;
     }
 
-    this.listaObstaculos = [];
+    this.personagem = {
+      cor: '#8fc0c6',
+      largura: 30,
+      altura: 60,
+      left: 400,
+      top: 200
+    }
+
+    this.listaObjetos = [];
 
     this.listaTodosCheckPoints = [];
 
@@ -30,9 +38,13 @@ class GlobalVariables {
       let ultimoCheckPoint = this.listaTodosCheckPoints.find(cp => cp.id === this.idUltimoCheckPoint)
       if(ultimoCheckPoint){
         ultimoCheckPoint = this.listaTodosCheckPoints[0];
+        this.personagem.left = ultimoCheckPoint.left;
+        this.personagem.top = ultimoCheckPoint.top;
+        return;
       }
 
-      
+      this.personagem.left = 400;
+      this.personagem.top = 200;
     }
 
     GlobalVariables.instancia = this;

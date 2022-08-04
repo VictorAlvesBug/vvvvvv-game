@@ -78,13 +78,13 @@ listaTelas.push({
   listaCheckPoints: [
     {
       id: globalVariables.gerarId(),
-      X: 3.5,
-      Y: 5
+      left: 284,
+      top: 244
     },
     {
       id: globalVariables.gerarId(),
-      X: 3.5,
-      Y: 8
+      left: 284,
+      top: 452
     },
   ],
   idTelaCima: 2,

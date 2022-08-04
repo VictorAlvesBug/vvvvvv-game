@@ -1,4 +1,4 @@
-import { tipoObstaculoEnum } from './utilEnums.js';
+import { tipoObjetoEnum } from './utilEnums.js';
 import GlobalVariables from './GlobalVariables.js';
 import listaTelas from './listaTelas.js';
 
@@ -24,8 +24,19 @@ const desenharTela = (gameBoard) => {
   const larguraChao = canvas.width / (qtdeColunasChao - 1);
   const alturaChao = canvas.height / (qtdeLinhasChao - 1);
 
-  globalVariables.listaObstaculos = globalVariables.listaObstaculos.filter(
-    (obst) => obst.tipo !== tipoObstaculoEnum.CHAO
+  //console.log(globalVariables.personagem)
+  context.fillStyle = globalVariables.personagem.cor;
+        context.beginPath();
+        context.rect(
+          globalVariables.personagem.left,
+          globalVariables.personagem.top,
+          globalVariables.personagem.largura,
+          globalVariables.personagem.altura
+        );
+        context.fill();
+
+  globalVariables.listaObjetos = globalVariables.listaObjetos.filter(
+    (obj) => obj.tipo !== tipoObjetoEnum.CHAO
   );
 
   for (let linha = 0; linha < qtdeLinhasChao; linha++) {
@@ -45,14 +56,13 @@ const desenharTela = (gameBoard) => {
           alturaChao + 1
         );
         context.fill();
-        globalVariables.listaObstaculos.push({
+        globalVariables.listaObjetos.push({
           id: globalVariables.gerarId(),
           posicaoX: posicaoChaoX,
           posicaoY: posicaoChaoY,
           largura: larguraChao,
           altura: alturaChao,
-          provocaDanoAoEncostar: false,
-          tipo: tipoObstaculoEnum.CHAO,
+          tipo: tipoObjetoEnum.CHAO,
         });
       }
     }
@@ -62,8 +72,8 @@ const desenharTela = (gameBoard) => {
   const alturaInimigo = alturaChao * 0.8;
 
   telaAtual.listaInimigos.forEach((inimigo) => {
-    globalVariables.listaObstaculos = globalVariables.listaObstaculos.filter(
-      (obst) => obst.id !== inimigo.id
+    globalVariables.listaObjetos = globalVariables.listaObjetos.filter(
+      (obj) => obj.id !== inimigo.id
     );
 
     let posicaoAtualInimigo = {};
@@ -120,14 +130,13 @@ const desenharTela = (gameBoard) => {
     );
     //context.stroke();
     context.fill();
-    globalVariables.listaObstaculos.push({
+    globalVariables.listaObjetos.push({
       id: inimigo.id,
       posicaoX: posicaoInimigoX,
       posicaoY: posicaoInimigoY,
       largura: larguraInimigo,
       altura: alturaInimigo,
-      provocaDanoAoEncostar: true,
-      tipo: tipoObstaculoEnum.INIMIGO,
+      tipo: tipoObjetoEnum.INIMIGO,
     });
   });
   
@@ -136,28 +145,23 @@ const desenharTela = (gameBoard) => {
 
 
   telaAtual.listaCheckPoints.forEach(checkPoint => {
-    const posicaoCheckPointX =
-      -0.4 * larguraChao + larguraChao * checkPoint.X;
-    const posicaoCheckPointY =
-      -0.4 * alturaChao + alturaChao * checkPoint.Y;
     context.fillStyle = '#eeeeee';
     context.beginPath();
     context.rect(
-      posicaoCheckPointX,
-      posicaoCheckPointY,
+      checkPoint.left,
+      checkPoint.top,
       larguraCheckPoint,
       alturaCheckPoint
     );
     //context.stroke();
     context.fill();
-    globalVariables.listaObstaculos.push({
+    globalVariables.listaObjetos.push({
       id: checkPoint.id,
-      posicaoX: posicaoCheckPointX,
-      posicaoY: posicaoCheckPointY,
+      posicaoX: checkPoint.left,
+      posicaoY: checkPoint.top,
       largura: larguraCheckPoint,
       altura: alturaCheckPoint,
-      provocaDanoAoEncostar: true,
-      tipo: tipoObstaculoEnum.INIMIGO,
+      tipo: tipoObjetoEnum.CHECKPOINT,
     });
   });
 };

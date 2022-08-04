@@ -1,4 +1,4 @@
-import { direcaoEnum, colisaoEnum } from './utilEnums.js';
+import { direcaoEnum, tipoObjetoEnum } from './utilEnums.js';
 import GlobalVariables from './GlobalVariables.js';
 
 Number.prototype.estaEntre = function (minimo, maximo) {
@@ -7,19 +7,20 @@ Number.prototype.estaEntre = function (minimo, maximo) {
 
 function createMovimentoPersonagem(gameBoard) {
   const globalVariables = new GlobalVariables();
-  const personagem = gameBoard.querySelector('#personagem');
   const incrementoMovimento = 1;
 
   const andar = (direcao) => {
-      const colisao = direcaoEstaDisponivel(direcao);
+    const colisao = direcaoEstaDisponivel(direcao);
 
-      switch (colisao) {
-        case colisaoEnum.SEM_COLISAO:
-          moverParaDirecao(direcao);
-          break;
-        case colisaoEnum.COLISAO_COM_DANO:
-          globalVariables.gameOver();
-          break;
+    switch (colisao) {
+      case tipoObjetoEnum.NADA:
+        case tipoObjetoEnum.CHECKPOINT:
+        moverParaDirecao(direcao);
+        break;
+      case tipoObjetoEnum.INIMIGO:
+      case tipoObjetoEnum.ESPINHO:
+        globalVariables.gameOver();
+        break;
     }
   };
 
@@ -27,33 +28,62 @@ function createMovimentoPersonagem(gameBoard) {
     left: personagemLeft,
     top: personagemTop,
   }) => {
-    const { width, height } = personagem.getBoundingClientRect();
+    const { largura, altura } = globalVariables.personagem;
 
-    const personagemRight = personagemLeft + width;
-    const personagemBottom = personagemTop + height;
+    const personagemRight = personagemLeft + largura;
+    const personagemBottom = personagemTop + altura;
 
-    let colisao = colisaoEnum.SEM_COLISAO;
-    globalVariables.listaObstaculos.forEach((obstaculo) => {
-      const obstaculoLeft = obstaculo.posicaoX;
-      const obstaculoRight = obstaculo.posicaoX + obstaculo.largura;
-      const obstaculoTop = obstaculo.posicaoY;
-      const obstaculoBottom = obstaculo.posicaoY + obstaculo.altura;
+    let colisao = tipoObjetoEnum.NADA;
+    globalVariables.listaObjetos.forEach((objeto) => {
+      const objetoLeft = objeto.posicaoX;
+      const objetoRight = objeto.posicaoX + objeto.largura;
+      const objetoTop = objeto.posicaoY;
+      const objetoBottom = objeto.posicaoY + objeto.altura;
 
-      let colidiu = true;
-      colidiu &&=
-        personagemLeft.estaEntre(obstaculoLeft, obstaculoRight) ||
-        personagemRight.estaEntre(obstaculoLeft, obstaculoRight);
-      colidiu &&=
-        personagemTop.estaEntre(obstaculoTop, obstaculoBottom) ||
-        personagemBottom.estaEntre(obstaculoTop, obstaculoBottom);
+      let colidiu =
+      ((personagemLeft.estaEntre(objetoLeft, objetoRight) 
+      || personagemRight.estaEntre(objetoLeft, objetoRight)) 
+      && (personagemTop.estaEntre(objetoTop, objetoBottom) 
+      || personagemBottom.estaEntre(objetoTop, objetoBottom))) 
+      || 
+      ((objetoLeft.estaEntre(personagemLeft, personagemRight) 
+      || objetoRight.estaEntre(personagemLeft, personagemRight)) 
+      && (objetoLeft.estaEntre(personagemTop, personagemBottom) 
+      || objetoRight.estaEntre(personagemTop, personagemBottom)));
       if (colidiu) {
-        if (obstaculo.provocaDanoAoEncostar) {
-          colisao = colisaoEnum.COLISAO_COM_DANO;
+        switch (objeto.tipo) {
+          case tipoObjetoEnum.CHAO: 
+          if (colisao !== tipoObjetoEnum.INIMIGO) {
+            colisao = objeto.tipo;
+          }
+          break;
+          
+          case tipoObjetoEnum.INIMIGO: 
+            colisao = objeto.tipo;
+          break;
+          
+          case tipoObjetoEnum.PLATAFORMA: 
+          break;
+          
+          case tipoObjetoEnum.ESPINHO: 
+          break;
+          
+          case tipoObjetoEnum.CHECKPOINT: 
+          if (colisao !== tipoObjetoEnum.INIMIGO) {
+            colisao = objeto.tipo;
+            globalVariables.idUltimoCheckPoint = objeto.id;
+          }
+          break;
         }
-
-        if (colisao !== colisaoEnum.COLISAO_COM_DANO) {
-          colisao = colisaoEnum.COLISAO_SEM_DANO;
-        }
+/*
+        if (objeto.tipo === tipoObjetoEnum.INIMIGO) {
+          colisao = objeto.tipo;
+        } else if (
+          objeto.tipo === tipoObjetoEnum.CHAO &&
+          colisao !== tipoObjetoEnum.INIMIGO
+        ) {
+          colisao = tipoObjetoEnum.CHAO;
+        }*/
       }
     });
 
@@ -61,7 +91,7 @@ function createMovimentoPersonagem(gameBoard) {
   };
 
   const direcaoEstaDisponivel = (direcao) => {
-    let { left, top } = personagem.getBoundingClientRect();
+    let { left, top } = globalVariables.personagem;
 
     switch (direcao) {
       case direcaoEnum.CIMA:
@@ -85,9 +115,9 @@ function createMovimentoPersonagem(gameBoard) {
     let {
       left: personagemLeft,
       top: personagemTop,
-      width: larguraPersonagem,
-      height: alturaPersonagem,
-    } = personagem.getBoundingClientRect();
+      largura: larguraPersonagem,
+      altura: alturaPersonagem,
+    } = globalVariables.personagem;
 
     switch (direcao) {
       case direcaoEnum.CIMA:
@@ -127,14 +157,14 @@ function createMovimentoPersonagem(gameBoard) {
       personagemTop = -alturaPersonagem;
     }
 
-    personagem.style.left = `${personagemLeft}px`;
-    personagem.style.top = `${personagemTop}px`;
+    globalVariables.personagem.left = personagemLeft;
+    globalVariables.personagem.top = personagemTop;
   };
 
   return {
     andar,
     direcaoEstaDisponivel,
-    moverParaDirecao
+    moverParaDirecao,
   };
 }
 

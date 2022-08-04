@@ -1,4 +1,4 @@
-import { direcaoEnum, colisaoEnum } from './utilEnums.js';
+import { direcaoEnum, tipoObjetoEnum } from './utilEnums.js';
 import createMovimentoPersonagem from './movimentoPersonagemFactory.js';
 import GlobalVariables from './GlobalVariables.js';
 
@@ -21,20 +21,22 @@ function createGravidade(gameBoard){
           : direcaoEnum.BAIXO;
     
         const colisao = movimentoPersonagem.direcaoEstaDisponivel(direcaoGravidade);
-    
         switch (colisao) {
-          case colisaoEnum.SEM_COLISAO:
+          case tipoObjetoEnum.NADA:
+            case tipoObjetoEnum.CHECKPOINT:
             podeAlterarGravidade = false;
             movimentoPersonagem.moverParaDirecao(direcaoGravidade);
             break;
-          case colisaoEnum.COLISAO_SEM_DANO:
+
+          case tipoObjetoEnum.CHAO:
             podeAlterarGravidade = true;
-    
             break;
-          case colisaoEnum.COLISAO_COM_DANO:
-            podeAlterarGravidade = true;
-            globalVariables.gameOver();
-            break;
+
+            case tipoObjetoEnum.INIMIGO:
+              podeAlterarGravidade = true;
+              globalVariables.gameOver();
+              break;
+              
         }
       };
 

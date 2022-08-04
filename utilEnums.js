@@ -5,18 +5,13 @@ const direcaoEnum = {
   DIREITA: 4,
 };
 
-const colisaoEnum = {
-  SEM_COLISAO: 1,
-  COLISAO_SEM_DANO: 2,
-  COLISAO_COM_DANO: 3,
+const tipoObjetoEnum = {
+  NADA: 1,
+  CHAO: 2,
+  INIMIGO: 3,
+  PLATAFORMA: 4,
+  ESPINHO: 5,
+  CHECKPOINT: 6
 };
 
-const tipoObstaculoEnum = {
-  CHAO: 1,
-  INIMIGO: 2,
-  PLATAFORMA: 3,
-  ESPINHO: 4,
-  CHECKPOINT: 5
-};
-
-export { direcaoEnum, colisaoEnum, tipoObstaculoEnum };
+export { direcaoEnum, tipoObjetoEnum };
