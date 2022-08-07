@@ -1,4 +1,4 @@
-import GlobalVariables from './GlobalVariables.js';
+import GlobalVariables from './src/GlobalVariables/GlobalVariables.js';
 
 const globalVariables = new GlobalVariables();
 
@@ -6,9 +6,9 @@ const listaTelas = [];
 
 listaTelas.push({
   id: 2,
-  gridChao:
+  grid:
     '111001111111111' +
-    '111001011111011' +
+    '111001211111211' +
     '111001011111011' +
     '111000000000001' +
     '111000000000001' +
@@ -19,8 +19,10 @@ listaTelas.push({
     '111000000000001' +
     '111000000000001' +
     '111001011111111' +
-    '111001011111111' +
+    '111001311111111' +
     '111001111111111',
+  corPrincipal: '#edf190',
+  corInimigo: '#f2f012',
   listaInimigos: [
     {
       id: globalVariables.gerarId(),
@@ -75,16 +77,16 @@ listaTelas.push({
       velocidade: 1,
     },
   ],
-  listaCheckPoints: [
+  listaCheckpoints: [
     {
       id: globalVariables.gerarId(),
-      left: 284,
-      top: 244
+      posicaoX: 284,
+      posicaoY: 244,
     },
     {
       id: globalVariables.gerarId(),
-      left: 284,
-      top: 452
+      posicaoX: 284,
+      posicaoY: 452,
     },
   ],
   idTelaCima: 2,
@@ -92,7 +94,7 @@ listaTelas.push({
 });
 
 listaTelas.forEach(tela => {
-    globalVariables.listaTodosCheckPoints.concat(tela.listaCheckPoints)
+    globalVariables.listaTodosCheckpoints.concat(tela.listaCheckpoints)
 });
 
 export default listaTelas;

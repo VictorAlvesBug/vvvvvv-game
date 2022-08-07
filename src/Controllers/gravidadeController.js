@@ -1,10 +1,11 @@
-import { direcaoEnum, tipoObjetoEnum } from './utilEnums.js';
-import createMovimentoPersonagem from './movimentoPersonagemFactory.js';
-import GlobalVariables from './GlobalVariables.js';
+import direcaoEnum from './../Enums/direcaoEnum.js';
+import tipoObjetoEnum from './../Enums/tipoObjetoEnum.js';
+import criarMovimento from './movimentoController.js';
+import GlobalVariables from './../GlobalVariables/GlobalVariables.js';
 
-function createGravidade(gameBoard){
+function criarGravidade(gameBoard){
 
-    const movimentoPersonagem = createMovimentoPersonagem(gameBoard);
+    const movimento = criarMovimento(gameBoard);
     const globalVariables = new GlobalVariables();
     let gravidadeInvertida = false;
     let podeAlterarGravidade = true;
@@ -15,17 +16,17 @@ function createGravidade(gameBoard){
       }
     };
 
-    const aplicarAcaoGravidade = () => {
+    const aplicarGravidade = () => {
         const direcaoGravidade = gravidadeInvertida
           ? direcaoEnum.CIMA
           : direcaoEnum.BAIXO;
     
-        const colisao = movimentoPersonagem.direcaoEstaDisponivel(direcaoGravidade);
+        const colisao = movimento.direcaoEstaDisponivel(direcaoGravidade);
         switch (colisao) {
           case tipoObjetoEnum.NADA:
             case tipoObjetoEnum.CHECKPOINT:
             podeAlterarGravidade = false;
-            movimentoPersonagem.moverParaDirecao(direcaoGravidade);
+            movimento.moverParaDirecao(direcaoGravidade);
             break;
 
           case tipoObjetoEnum.CHAO:
@@ -42,8 +43,8 @@ function createGravidade(gameBoard){
 
       return {
         alternarGravidade,
-        aplicarAcaoGravidade
+        aplicarGravidade
       };
 }
 
-export default createGravidade;
+export default criarGravidade;

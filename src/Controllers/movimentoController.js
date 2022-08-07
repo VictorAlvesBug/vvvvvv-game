@@ -1,11 +1,12 @@
-import { direcaoEnum, tipoObjetoEnum } from './utilEnums.js';
-import GlobalVariables from './GlobalVariables.js';
+import direcaoEnum from './../Enums/direcaoEnum.js';
+import tipoObjetoEnum from './../Enums/tipoObjetoEnum.js';
+import GlobalVariables from './../GlobalVariables/GlobalVariables.js';
 
 Number.prototype.estaEntre = function (minimo, maximo) {
   return this >= minimo && this <= maximo;
 };
 
-function createMovimentoPersonagem(gameBoard) {
+function criarMovimento(gameBoard) {
   const globalVariables = new GlobalVariables();
   const incrementoMovimento = 1;
 
@@ -71,19 +72,10 @@ function createMovimentoPersonagem(gameBoard) {
           case tipoObjetoEnum.CHECKPOINT: 
           if (colisao !== tipoObjetoEnum.INIMIGO) {
             colisao = objeto.tipo;
-            globalVariables.idUltimoCheckPoint = objeto.id;
+            globalVariables.idUltimoCheckpoint = objeto.id;
           }
           break;
         }
-/*
-        if (objeto.tipo === tipoObjetoEnum.INIMIGO) {
-          colisao = objeto.tipo;
-        } else if (
-          objeto.tipo === tipoObjetoEnum.CHAO &&
-          colisao !== tipoObjetoEnum.INIMIGO
-        ) {
-          colisao = tipoObjetoEnum.CHAO;
-        }*/
       }
     });
 
@@ -91,24 +83,24 @@ function createMovimentoPersonagem(gameBoard) {
   };
 
   const direcaoEstaDisponivel = (direcao) => {
-    let { left, top } = globalVariables.personagem;
+    let { posicaoX, posicaoY } = globalVariables.personagem;
 
     switch (direcao) {
       case direcaoEnum.CIMA:
-        top -= incrementoMovimento;
+        posicaoY -= incrementoMovimento;
         break;
       case direcaoEnum.BAIXO:
-        top += incrementoMovimento;
+        posicaoY += incrementoMovimento;
         break;
       case direcaoEnum.ESQUERDA:
-        left -= incrementoMovimento;
+        posicaoX -= incrementoMovimento;
         break;
       case direcaoEnum.DIREITA:
-        left += incrementoMovimento;
+        posicaoX += incrementoMovimento;
         break;
     }
 
-    return posicaoEstaDisponivel({ left, top });
+    return posicaoEstaDisponivel({ posicaoX, posicaoY });
   };
 
   const moverParaDirecao = (direcao) => {
@@ -168,4 +160,4 @@ function createMovimentoPersonagem(gameBoard) {
   };
 }
 
-export default createMovimentoPersonagem;
+export default criarMovimento;
