@@ -1,6 +1,7 @@
 import direcaoEnum from './../Enums/direcaoEnum.js';
 import tipoObjetoEnum from './../Enums/tipoObjetoEnum.js';
 import GlobalVariables from './../GlobalVariables/GlobalVariables.js';
+import listaTelas from '../Telas/listaTelas.js';
 
 Number.prototype.estaEntre = function (minimo, maximo) {
   return this >= minimo && this <= maximo;
@@ -9,154 +10,208 @@ Number.prototype.estaEntre = function (minimo, maximo) {
 function criarMovimento(gameBoard) {
   const globalVariables = new GlobalVariables();
   const incrementoMovimento = 1;
+  let gravidadeInvertida = false;
+  let podeAlterarGravidade = true;
 
-  const andar = (direcao) => {
-    const colisao = direcaoEstaDisponivel(direcao);
+  let telaAtual = listaTelas.find(
+    (tela) => tela.id === globalVariables.idTelaAtual
+  );
 
-    switch (colisao) {
-      case tipoObjetoEnum.NADA:
-        case tipoObjetoEnum.CHECKPOINT:
-        moverParaDirecao(direcao);
-        break;
-      case tipoObjetoEnum.INIMIGO:
-      case tipoObjetoEnum.ESPINHO:
-        globalVariables.gameOver();
-        break;
+  const retornarDirecaoGravidade = () => {
+    return gravidadeInvertida ? direcaoEnum.CIMA : direcaoEnum.BAIXO;
+  };
+
+  const retornarDirecaoContraria = (direcao) => {
+    switch (direcao) {
+      case direcaoEnum.CIMA:
+        return direcaoEnum.BAIXO;
+      case direcaoEnum.BAIXO:
+        return direcaoEnum.CIMA;
+      case direcaoEnum.ESQUERDA:
+        return direcaoEnum.DIREITA;
+      case direcaoEnum.DIREITA:
+        return direcaoEnum.ESQUERDA;
     }
   };
 
-  const posicaoEstaDisponivel = ({
-    left: personagemLeft,
-    top: personagemTop,
-  }) => {
-    const { largura, altura } = globalVariables.personagem;
+  const alternarGravidade = (personagem) => {
+    if (podeAlterarGravidade && !atravessouChao(personagem)) {
+      gravidadeInvertida = !gravidadeInvertida;
+      podeAlterarGravidade = false;
+    }
+  };
 
-    const personagemRight = personagemLeft + largura;
-    const personagemBottom = personagemTop + altura;
+  const tentarMover = (direcao, personagem) => {
+    let ehDirecaoGravidade = false;
+    if (direcao === direcaoEnum.GRAVIDADE) {
+      direcao = retornarDirecaoGravidade();
+      ehDirecaoGravidade = true;
+    }
 
-    let colisao = tipoObjetoEnum.NADA;
+    const personagemNovaPosicao = simularMovimentoNaDirecao(
+      direcao,
+      personagem
+    );
+    const listaObjetosEmContato = retornarObjetosEmContato(
+      personagemNovaPosicao
+    );
+
+    const estaNoChao = listaObjetosEmContato.some((obj) => {
+      const tiposConsiderar = [tipoObjetoEnum.CHAO, tipoObjetoEnum.PLATAFORMA];
+      return tiposConsiderar.includes(obj.tipo);
+    });
+
+    const sofreuDano = listaObjetosEmContato.some((obj) => {
+      const tiposConsiderar = [
+        tipoObjetoEnum.ESPINHO_CIMA,
+        tipoObjetoEnum.ESPINHO_BAIXO,
+        tipoObjetoEnum.ESPINHO_ESQUERDA,
+        tipoObjetoEnum.ESPINHO_DIREITA,
+        tipoObjetoEnum.INIMIGO,
+      ];
+      return tiposConsiderar.includes(obj.tipo);
+    });
+
+    const checkpointEmContato = listaObjetosEmContato.find((obj) => {
+      const tiposConsiderar = [tipoObjetoEnum.CHECKPOINT];
+      return tiposConsiderar.includes(obj.tipo);
+    });
+
+    if (estaNoChao) {
+      if (atravessouChao(personagem)) {
+        const direcaoContraria = retornarDirecaoContraria(direcao);
+        moverParaDirecao(direcaoContraria, personagem);
+        podeAlterarGravidade = false;
+      } else if (ehDirecaoGravidade) {
+        podeAlterarGravidade = true;
+      }
+    }
+
+    if (!estaNoChao && !sofreuDano) {
+      moverParaDirecao(direcao, personagem);
+      if (ehDirecaoGravidade) {
+        podeAlterarGravidade = false;
+      }
+    }
+
+    if (sofreuDano) {
+      gravidadeInvertida = globalVariables.gameOver(personagem);
+    }
+
+    if (
+      checkpointEmContato &&
+      podeAlterarGravidade &&
+      globalVariables.idUltimoCheckpoint !== checkpointEmContato.id
+    ) {
+      globalVariables.idUltimoCheckpoint = checkpointEmContato.id;
+      globalVariables.gravidadeUltimoCheckpoint = gravidadeInvertida;
+      globalVariables.idTelaUltimoCheckpoint = globalVariables.idTelaAtual;
+    }
+  };
+
+  const atravessouChao = (personagem) => {
+    const estaSobreChao = retornarObjetosEmContato(personagem).some(
+      (obj) => obj.tipo === tipoObjetoEnum.CHAO
+    );
+
+    return estaSobreChao && telaAtual.id === globalVariables.idTelaAtual;
+  };
+
+  const simularMovimentoNaDirecao = (direcao, personagem) => {
+    const personagemNovaPosicao = { ...personagem };
+    switch (direcao) {
+      case direcaoEnum.CIMA:
+        personagemNovaPosicao.posicaoY -= incrementoMovimento;
+        break;
+      case direcaoEnum.BAIXO:
+        personagemNovaPosicao.posicaoY += incrementoMovimento;
+        break;
+      case direcaoEnum.ESQUERDA:
+        personagemNovaPosicao.posicaoX -= incrementoMovimento;
+        break;
+      case direcaoEnum.DIREITA:
+        personagemNovaPosicao.posicaoX += incrementoMovimento;
+        break;
+    }
+
+    return personagemNovaPosicao;
+  };
+
+  const retornarObjetosEmContato = (personagem) => {
+    const personagemRight = personagem.posicaoX + personagem.largura;
+    const personagemBottom = personagem.posicaoY + personagem.altura;
+
+    let listaObjetosEmContato = [];
     globalVariables.listaObjetos.forEach((objeto) => {
-      const objetoLeft = objeto.posicaoX;
       const objetoRight = objeto.posicaoX + objeto.largura;
-      const objetoTop = objeto.posicaoY;
       const objetoBottom = objeto.posicaoY + objeto.altura;
 
-      let colidiu =
-      ((personagemLeft.estaEntre(objetoLeft, objetoRight) 
-      || personagemRight.estaEntre(objetoLeft, objetoRight)) 
-      && (personagemTop.estaEntre(objetoTop, objetoBottom) 
-      || personagemBottom.estaEntre(objetoTop, objetoBottom))) 
-      || 
-      ((objetoLeft.estaEntre(personagemLeft, personagemRight) 
-      || objetoRight.estaEntre(personagemLeft, personagemRight)) 
-      && (objetoLeft.estaEntre(personagemTop, personagemBottom) 
-      || objetoRight.estaEntre(personagemTop, personagemBottom)));
-      if (colidiu) {
-        switch (objeto.tipo) {
-          case tipoObjetoEnum.CHAO: 
-          if (colisao !== tipoObjetoEnum.INIMIGO) {
-            colisao = objeto.tipo;
-          }
-          break;
-          
-          case tipoObjetoEnum.INIMIGO: 
-            colisao = objeto.tipo;
-          break;
-          
-          case tipoObjetoEnum.PLATAFORMA: 
-          break;
-          
-          case tipoObjetoEnum.ESPINHO: 
-          break;
-          
-          case tipoObjetoEnum.CHECKPOINT: 
-          if (colisao !== tipoObjetoEnum.INIMIGO) {
-            colisao = objeto.tipo;
-            globalVariables.idUltimoCheckpoint = objeto.id;
-          }
-          break;
-        }
+      let estaEmContato =
+        ((personagem.posicaoX.estaEntre(objeto.posicaoX, objetoRight) ||
+          personagemRight.estaEntre(objeto.posicaoX, objetoRight)) &&
+          (personagem.posicaoY.estaEntre(objeto.posicaoY, objetoBottom) ||
+            personagemBottom.estaEntre(objeto.posicaoY, objetoBottom))) ||
+        ((objeto.posicaoX.estaEntre(personagem.posicaoX, personagemRight) ||
+          objetoRight.estaEntre(personagem.posicaoX, personagemRight)) &&
+          (objeto.posicaoY.estaEntre(personagem.posicaoY, personagemBottom) ||
+            objetoBottom.estaEntre(personagem.posicaoY, personagemBottom)));
+
+      if (estaEmContato) {
+        listaObjetosEmContato.push(objeto);
       }
     });
 
-    return colisao;
+    return listaObjetosEmContato;
   };
 
-  const direcaoEstaDisponivel = (direcao) => {
-    let { posicaoX, posicaoY } = globalVariables.personagem;
-
+  const moverParaDirecao = (direcao, personagem) => {
     switch (direcao) {
       case direcaoEnum.CIMA:
-        posicaoY -= incrementoMovimento;
+        personagem.posicaoY -= incrementoMovimento;
         break;
       case direcaoEnum.BAIXO:
-        posicaoY += incrementoMovimento;
+        personagem.posicaoY += incrementoMovimento;
         break;
       case direcaoEnum.ESQUERDA:
-        posicaoX -= incrementoMovimento;
+        personagem.posicaoX -= incrementoMovimento;
         break;
       case direcaoEnum.DIREITA:
-        posicaoX += incrementoMovimento;
+        personagem.posicaoX += incrementoMovimento;
         break;
     }
 
-    return posicaoEstaDisponivel({ posicaoX, posicaoY });
-  };
+    const { width: larguraTela, height: alturaTela } =
+      gameBoard.querySelector('#canvas');
 
-  const moverParaDirecao = (direcao) => {
-    let {
-      left: personagemLeft,
-      top: personagemTop,
-      largura: larguraPersonagem,
-      altura: alturaPersonagem,
-    } = globalVariables.personagem;
+    telaAtual = listaTelas.find(
+      (tela) => tela.id === globalVariables.idTelaAtual
+    );
 
-    switch (direcao) {
-      case direcaoEnum.CIMA:
-        personagemTop -= incrementoMovimento;
-        break;
-      case direcaoEnum.BAIXO:
-        personagemTop += incrementoMovimento;
-        break;
-      case direcaoEnum.ESQUERDA:
-        personagemLeft -= incrementoMovimento;
-        break;
-      case direcaoEnum.DIREITA:
-        personagemLeft += incrementoMovimento;
-        break;
+    if (personagem.posicaoX + personagem.largura < 0) {
+      personagem.posicaoX = 0 + larguraTela;
+      globalVariables.idTelaAtual = telaAtual.idTelaEsquerda;
     }
-
-    const {
-      left: telaLeft,
-      top: telaTop,
-      width: larguraTela,
-      height: alturaTela,
-    } = gameBoard.getBoundingClientRect();
-
-    if (personagemLeft + larguraPersonagem < 0) {
-      personagemLeft = telaLeft + larguraTela;
+    else if (personagem.posicaoX > 0 + larguraTela) {
+      personagem.posicaoX = -personagem.largura;
+      globalVariables.idTelaAtual = telaAtual.idTelaDireita;
     }
-
-    if (personagemLeft > telaLeft + larguraTela) {
-      personagemLeft = -larguraPersonagem;
+    else if (personagem.posicaoY + personagem.altura < 0) {
+      personagem.posicaoY = 0 + alturaTela;
+      globalVariables.idTelaAtual = telaAtual.idTelaCima;
     }
-
-    if (personagemTop + alturaPersonagem < 0) {
-      personagemTop = telaTop + alturaTela;
+    else if (personagem.posicaoY > 0 + alturaTela) {
+      personagem.posicaoY = -personagem.altura;
+      globalVariables.idTelaAtual = telaAtual.idTelaBaixo;
     }
-
-    if (personagemTop > telaTop + alturaTela) {
-      personagemTop = -alturaPersonagem;
-    }
-
-    globalVariables.personagem.left = personagemLeft;
-    globalVariables.personagem.top = personagemTop;
+    
+    return personagem;
   };
 
   return {
-    andar,
-    direcaoEstaDisponivel,
+    alternarGravidade,
+    tentarMover,
     moverParaDirecao,
+    atravessouChao,
   };
 }
 

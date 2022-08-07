@@ -1,23 +1,42 @@
+import direcaoEnum from './../Enums/direcaoEnum.js';
 import criarMovimento from './movimentoController.js';
-import criarGravidade from './gravidadeController.js';
 
 function criarPersonagem(gameBoard) {
-
-    const posicaoInicialX = 400;
-    const posicaoInicialY = 200;
+  let atributos = {
+    corVivo: '#8fc0c6',
+    corMorto: '#8b1e1e',
+    posicaoX: 360,
+    posicaoY: 250,
+    largura: 20,
+    altura: 50,
+    vivo: true,
+  };
 
   const movimento = criarMovimento(gameBoard);
-  const gravidade = criarGravidade(gameBoard);
-  
+
+  const aplicarGravidade = () => {
+    if (atributos.vivo) {
+      movimento.tentarMover(direcaoEnum.GRAVIDADE, atributos);
+    }
+  };
+
+  const alternarGravidade = () => {
+    if (atributos.vivo) {
+      movimento.alternarGravidade(atributos);
+    }
+  };
+
+  const andar = (direcao) => {
+    if (atributos.vivo) {
+      movimento.tentarMover(direcao, atributos);
+    }
+  };
+
   return {
-    cor: '#8fc0c6',
-    largura: 30,
-    altura: 60,
-    posicaoX: posicaoInicialX,
-    posicaoY: posicaoInicialY,
-    aplicarGravidade: gravidade.aplicarGravidade,
-    alternarGravidade: gravidade.alternarGravidade,
-    andar: movimento.andar,
+    atributos,
+    aplicarGravidade,
+    alternarGravidade,
+    andar
   };
 }
 

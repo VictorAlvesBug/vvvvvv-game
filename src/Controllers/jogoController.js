@@ -3,18 +3,19 @@ import criarTela from './telaController.js';
 import criarPersonagem from './personagemController.js';
 
 function criarJogo(gameBoard) {
-  const personagem = criarPersonagem();
+  const personagem = criarPersonagem(gameBoard);
 
   // Define quantas vezes serão executados os comando de 'aplicarGravidade' e 
   // 'andar' para que a movimentação seja mais rápida, porém não exigindo que
   // a atualização do canvas seja executada na mesma frequência. 
-  const qtdeVezesIterar = 8;
+  const velocidadeGravidade = 10;
+  const velocidadeAndar = 6 ;
 
   const tela = criarTela(gameBoard);
 
   const atualizar = () => {
-    tela.atualizar(personagem);
-    for (let i = 0; i < qtdeVezesIterar; i++) {
+    tela.atualizar(personagem.atributos);
+    for (let i = 0; i < velocidadeGravidade; i++) {
       personagem.aplicarGravidade();
     }
   };
@@ -25,12 +26,12 @@ function criarJogo(gameBoard) {
       ArrowUp: personagem.alternarGravidade,
       ArrowDown: personagem.alternarGravidade,
       ArrowLeft: () => {
-        for (let i = 0; i < qtdeVezesIterar; i++) {
+        for (let i = 0; i < velocidadeAndar; i++) {
           personagem.andar(direcaoEnum.ESQUERDA);
         }
       },
       ArrowRight: () => {
-        for (let i = 0; i < qtdeVezesIterar; i++) {
+        for (let i = 0; i < velocidadeAndar; i++) {
           personagem.andar(direcaoEnum.DIREITA);
         }
       },

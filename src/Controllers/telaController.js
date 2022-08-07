@@ -1,6 +1,6 @@
 import tipoObjetoEnum from './../Enums/tipoObjetoEnum.js';
 import GlobalVariables from './../GlobalVariables/GlobalVariables.js';
-import listaTelas from '../../listaTelas.js';
+import listaTelas from '../Telas/listaTelas.js';
 
 const mapValue = (value, minIn, maxIn, minOut, maxOut) => {
   return ((value - minIn) / (maxIn - minIn)) * (maxOut - minOut) + minOut;
@@ -10,26 +10,20 @@ const criarTela = (gameBoard) => {
   const canvas = gameBoard.querySelector('#canvas');
   const contexto = canvas.getContext('2d');
 
-const globalVariables = new GlobalVariables();
-let geradorIdFrame = globalVariables.gerarIdFrame();
-let idFrame = geradorIdFrame.next().value;
+  const globalVariables = new GlobalVariables();
+  let geradorIdFrame = globalVariables.gerarIdFrame();
+  const geradorId = globalVariables.gerarId();
+  let idFrame = geradorIdFrame.next().value;
 
-  // Tela inicial possui id = 2
-  let telaAtual = listaTelas.find((tela) => tela.id === 2);
-
-  const definirTela = (idTela) => {
-    const novaTela = listaTelas.find((tela) => tela.id === idTela);
-
-    if(!novaTela){
-      return console.error(`Tela de ID = ${idTela} não encontrada.`);
-    }
-    telaAtual = novaTela;
-    geradorIdFrame = globalVariables.gerarIdFrame();
-  };
+  let telaAtual = listaTelas.find(
+    (tela) => tela.id === globalVariables.idTelaAtual
+  );
 
   const redimensionarCanvas = () => {
-    canvas.width = gameBoard.getBoundingClientRect().width;
-    canvas.height = gameBoard.getBoundingClientRect().height;
+    //canvas.width = gameBoard.getBoundingClientRect().width;
+    //canvas.height = gameBoard.getBoundingClientRect().height;
+    canvas.width = 1000;
+    canvas.height = 1000;
   };
 
   const limparCanvas = () => {
@@ -41,7 +35,9 @@ let idFrame = geradorIdFrame.next().value;
   };
 
   const desenharPersonagem = (personagem) => {
-    contexto.fillStyle = personagem.cor;
+    contexto.fillStyle = personagem.vivo
+      ? personagem.corVivo
+      : personagem.corMorto;
     contexto.beginPath();
     contexto.rect(
       personagem.posicaoX,
@@ -107,28 +103,32 @@ let idFrame = geradorIdFrame.next().value;
     }
 
     return {
-      x1,
-      y1,
-      x2,
-      y2,
-      x3,
-      y3,
+      x1: Math.round(x1),
+      y1: Math.round(y1),
+      x2: Math.round(x2),
+      y2: Math.round(y2),
+      x3: Math.round(x3),
+      y3: Math.round(y3),
     };
   };
 
   const desenharEstruturaTela = () => {
-    const qtdeColunas = 15;
-    const qtdeLinhas = 14;
+    const qtdeColunas = 30;
+    const qtdeLinhas = 30;
 
-    const larguraBloco = canvas.width / (qtdeColunas - 1);
-    const alturaBloco = canvas.height / (qtdeLinhas - 1);
+    const larguraBloco = Math.round(canvas.width / (qtdeColunas - 0));
+    const alturaBloco = Math.round(canvas.height / (qtdeLinhas - 0));
 
     for (let linha = 0; linha < qtdeLinhas; linha++) {
       for (let coluna = 0; coluna < qtdeColunas; coluna++) {
         const indiceGrid = linha * qtdeColunas + coluna;
         const enumBloco = Number(telaAtual.grid[indiceGrid]);
-        const posicaoX = -0.5 * larguraBloco + larguraBloco * coluna;
-        const posicaoY = -0.5 * alturaBloco + alturaBloco * linha;
+        const posicaoX = Math.round(
+          mapValue(coluna, 0, qtdeColunas, 0, canvas.width)
+        );
+        const posicaoY = Math.round(
+          mapValue(linha, 0, qtdeLinhas, 0, canvas.height)
+        );
 
         switch (enumBloco) {
           case tipoObjetoEnum.CHAO:
@@ -142,11 +142,11 @@ let idFrame = geradorIdFrame.next().value;
             );
             contexto.fill();
             globalVariables.listaObjetos.push({
-              id: globalVariables.gerarId(),
+              id: geradorId.next().value,
               posicaoX: posicaoX,
               posicaoY: posicaoY,
-              largura: larguraBloco,
-              altura: alturaBloco,
+              largura: larguraBloco + 1,
+              altura: alturaBloco + 1,
               tipo: enumBloco,
             });
             break;
@@ -162,6 +162,7 @@ let idFrame = geradorIdFrame.next().value;
               alturaBloco,
               enumBloco
             );
+            contexto.lineWidth = 2;
             contexto.beginPath();
             contexto.moveTo(coords.x1, coords.y1);
             contexto.lineTo(coords.x2, coords.y2);
@@ -169,7 +170,7 @@ let idFrame = geradorIdFrame.next().value;
             contexto.lineTo(coords.x1, coords.y1);
             contexto.stroke();
             globalVariables.listaObjetos.push({
-              id: globalVariables.gerarId(),
+              id: geradorId.next().value,
               posicaoX: posicaoX,
               posicaoY: posicaoY,
               largura: larguraBloco,
@@ -183,8 +184,8 @@ let idFrame = geradorIdFrame.next().value;
   };
 
   const desenharInimigos = () => {
-    const qtdeColunas = 15;
-    const qtdeLinhas = 14;
+    const qtdeColunas = 30;
+    const qtdeLinhas = 30;
 
     const larguraBloco = canvas.width / (qtdeColunas - 1);
     const alturaBloco = canvas.height / (qtdeLinhas - 1);
@@ -199,57 +200,60 @@ let idFrame = geradorIdFrame.next().value;
         (200 * inimigo.porcentagemCaminhoInicio + idFrame) % 200;
 
       if (frameInimigo < 100) {
-        posicaoAtualInimigo.X = mapValue(
-          frameInimigo % 100,
-          0,
-          100,
-          inimigo.posicaoA.X,
-          inimigo.posicaoB.X
+        posicaoAtualInimigo.X = Math.round(
+          mapValue(
+            frameInimigo % 100,
+            0,
+            100,
+            inimigo.posicaoA.X,
+            inimigo.posicaoB.X
+          )
         );
 
-        posicaoAtualInimigo.Y = mapValue(
-          frameInimigo % 100,
-          0,
-          100,
-          inimigo.posicaoA.Y,
-          inimigo.posicaoB.Y
+        posicaoAtualInimigo.Y = Math.round(
+          mapValue(
+            frameInimigo % 100,
+            0,
+            100,
+            inimigo.posicaoA.Y,
+            inimigo.posicaoB.Y
+          )
         );
       } else {
-        posicaoAtualInimigo.X = mapValue(
-          frameInimigo % 100,
-          0,
-          100,
-          inimigo.posicaoB.X,
-          inimigo.posicaoA.X
+        posicaoAtualInimigo.X = Math.round(
+          mapValue(
+            frameInimigo % 100,
+            0,
+            100,
+            inimigo.posicaoB.X,
+            inimigo.posicaoA.X
+          )
         );
 
-        posicaoAtualInimigo.Y = mapValue(
-          frameInimigo % 100,
-          0,
-          100,
-          inimigo.posicaoB.Y,
-          inimigo.posicaoA.Y
+        posicaoAtualInimigo.Y = Math.round(
+          mapValue(
+            frameInimigo % 100,
+            0,
+            100,
+            inimigo.posicaoB.Y,
+            inimigo.posicaoA.Y
+          )
         );
       }
-
-      const posicaoX =
-        -0.4 * larguraBloco + larguraBloco * posicaoAtualInimigo.X;
-      const posicaoY =
-        -0.4 * alturaBloco + alturaBloco * posicaoAtualInimigo.Y;
 
       contexto.fillStyle = telaAtual.corInimigo;
       contexto.beginPath();
       contexto.rect(
-        posicaoX,
-        posicaoY,
+        posicaoAtualInimigo.X,
+        posicaoAtualInimigo.Y,
         largura,
         altura
       );
       contexto.fill();
       globalVariables.listaObjetos.push({
         id: inimigo.id,
-        posicaoX: posicaoX,
-        posicaoY: posicaoY,
+        posicaoX: posicaoAtualInimigo.X,
+        posicaoY: posicaoAtualInimigo.Y,
         largura: largura,
         altura: altura,
         tipo: tipoObjetoEnum.INIMIGO,
@@ -258,38 +262,36 @@ let idFrame = geradorIdFrame.next().value;
   };
 
   const desenharCheckpoints = () => {
-    const qtdeColunas = 15;
-    const qtdeLinhas = 14;
+    const larguraCheckpoint = 20;
+    const alturaCheckpoint = 40;
 
-    const larguraBloco = canvas.width / (qtdeColunas - 1);
-    const alturaBloco = canvas.height / (qtdeLinhas - 1);
-    
-    const largura = larguraBloco * 0.3;
-  const altura = alturaBloco * 0.3;
-
-  telaAtual.listaCheckpoints.forEach((checkpoint) => {
-    contexto.fillStyle = '#eeeeee';
-    contexto.beginPath();
-    contexto.rect(
-      checkpoint.posicaoX,
-      checkpoint.posicaoY,
-      largura,
-      altura
-    );
-    //contexto.stroke();
-    contexto.fill();
-    globalVariables.listaObjetos.push({
-      id: checkpoint.id,
-      posicaoX: checkpoint.left,
-      posicaoY: checkpoint.top,
-      largura: largura,
-      altura: altura,
-      tipo: tipoObjetoEnum.CHECKPOINT,
+    telaAtual.listaCheckpoints.forEach((checkpoint) => {
+      const ehUltimoCheckpoint =
+        checkpoint.id === globalVariables.idUltimoCheckpoint;
+      contexto.fillStyle = ehUltimoCheckpoint ? '#dddddd' : '#666666';
+      contexto.beginPath();
+      contexto.rect(
+        checkpoint.posicaoX,
+        checkpoint.posicaoY,
+        larguraCheckpoint,
+        alturaCheckpoint
+      );
+      contexto.fill();
+      globalVariables.listaObjetos.push({
+        id: checkpoint.id,
+        posicaoY: checkpoint.posicaoY,
+        posicaoX: checkpoint.posicaoX,
+        largura: larguraCheckpoint,
+        altura: alturaCheckpoint,
+        tipo: tipoObjetoEnum.CHECKPOINT,
+      });
     });
-  });
   };
 
   const atualizar = (personagem) => {
+    telaAtual = listaTelas.find(
+      (tela) => tela.id === globalVariables.idTelaAtual
+    );
     idFrame = geradorIdFrame.next().value;
     redimensionarCanvas();
     limparCanvas();
@@ -302,8 +304,7 @@ let idFrame = geradorIdFrame.next().value;
 
   return {
     atualizar,
-    definirTela
-  }
+  };
 };
 
 export default criarTela;

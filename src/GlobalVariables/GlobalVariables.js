@@ -9,6 +9,10 @@ class GlobalVariables {
     this.listaTodosCheckpoints = [];
 
     this.idUltimoCheckpoint;
+    this.gravidadeUltimoCheckpoint;
+    this.idTelaUltimoCheckpoint;
+
+    this.idTelaAtual = 1;
 
     this.gerarId = function* () {
       let id = 1;
@@ -24,20 +28,25 @@ class GlobalVariables {
       }
     };
 
-    this.gameOver = () => {
-      console.log('GAME OVER');
+    this.gameOver = (personagem) => {
+      personagem.vivo = false;
 
-      let ultimoCheckpoint = this.listaTodosCheckpoints.find(cp => cp.id === this.idUltimoCheckpoint)
-      if(ultimoCheckpoint){
-        ultimoCheckpoint = this.listaTodosCheckpoints[0];
-        this.personagem.left = ultimoCheckpoint.left;
-        this.personagem.top = ultimoCheckpoint.top;
-        return;
-      }
-
-      this.personagem.left = 400;
-      this.personagem.top = 200;
-    }
+      setTimeout(() => {
+        let ultimoCheckpoint = this.listaTodosCheckpoints.find(
+          (cp) => cp.id === this.idUltimoCheckpoint
+        );
+        if (!ultimoCheckpoint) {
+          ultimoCheckpoint = this.listaTodosCheckpoints[0];
+        }
+        personagem.posicaoX = ultimoCheckpoint.posicaoX;
+        personagem.posicaoY = ultimoCheckpoint.posicaoY;
+        personagem.vivo = true;
+        
+        this.idTelaAtual = this.idTelaUltimoCheckpoint;
+      }, 300)
+      
+      return this.gravidadeUltimoCheckpoint;
+    };
 
     GlobalVariables.instancia = this;
   }
