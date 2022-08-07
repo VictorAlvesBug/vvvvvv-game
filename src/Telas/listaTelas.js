@@ -44,12 +44,12 @@ listaTelas.push({
     {
       id: geradorId.next().value,
       posicaoA: {
-        X: 420,
-        Y: 120,
+        X: 840,
+        Y: 240,
       },
       posicaoB: {
-        X: 420,
-        Y: 390,
+        X: 840,
+        Y: 780,
       },
       porcentagemCaminhoInicio: 0,
       velocidade: 1,
@@ -57,12 +57,12 @@ listaTelas.push({
     {
       id: geradorId.next().value,
       posicaoA: {
-        X: 819,
-        Y: 120,
+        X: 1638,
+        Y: 240,
       },
       posicaoB: {
-        X: 819,
-        Y: 750,
+        X: 1638,
+        Y: 1500,
       },
       porcentagemCaminhoInicio: 0.4,
       velocidade: 1,
@@ -70,12 +70,12 @@ listaTelas.push({
     {
       id: geradorId.next().value,
       posicaoA: {
-        X: 620,
-        Y: 520,
+        X: 1240,
+        Y: 1040,
       },
       posicaoB: {
-        X: 620,
-        Y: 750,
+        X: 1240,
+        Y: 1500,
       },
       porcentagemCaminhoInicio: 1,
       velocidade: 1,
@@ -84,13 +84,13 @@ listaTelas.push({
   listaCheckpoints: [
     {
       id: geradorId.next().value,
-      posicaoX: 250,
-      posicaoY: 389,
+      posicaoX: 500,
+      posicaoY: 778,
     },
     {
       id: geradorId.next().value,
-      posicaoX: 250,
-      posicaoY: 572,
+      posicaoX: 500,
+      posicaoY: 1144,
     },
   ],
   idTelaCima: 2,

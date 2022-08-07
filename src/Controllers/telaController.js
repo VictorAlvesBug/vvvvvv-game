@@ -22,8 +22,8 @@ const criarTela = (gameBoard) => {
   const redimensionarCanvas = () => {
     //canvas.width = gameBoard.getBoundingClientRect().width;
     //canvas.height = gameBoard.getBoundingClientRect().height;
-    canvas.width = 1000;
-    canvas.height = 1000;
+    canvas.width = 2000;
+    canvas.height = 2000;
   };
 
   const limparCanvas = () => {
@@ -262,8 +262,8 @@ const criarTela = (gameBoard) => {
   };
 
   const desenharCheckpoints = () => {
-    const larguraCheckpoint = 20;
-    const alturaCheckpoint = 40;
+    const larguraCheckpoint = 40;
+    const alturaCheckpoint = 80;
 
     telaAtual.listaCheckpoints.forEach((checkpoint) => {
       const ehUltimoCheckpoint =

@@ -8,8 +8,8 @@ function criarJogo(gameBoard) {
   // Define quantas vezes serão executados os comando de 'aplicarGravidade' e 
   // 'andar' para que a movimentação seja mais rápida, porém não exigindo que
   // a atualização do canvas seja executada na mesma frequência. 
-  const velocidadeGravidade = 10;
-  const velocidadeAndar = 6 ;
+  const velocidadeGravidade = 20;
+  const velocidadeAndar = 12 ;
 
   const tela = criarTela(gameBoard);
 

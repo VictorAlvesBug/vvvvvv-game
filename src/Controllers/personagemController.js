@@ -5,10 +5,10 @@ function criarPersonagem(gameBoard) {
   let atributos = {
     corVivo: '#8fc0c6',
     corMorto: '#8b1e1e',
-    posicaoX: 360,
-    posicaoY: 250,
-    largura: 20,
-    altura: 50,
+    posicaoX: 720,
+    posicaoY: 500,
+    largura: 40,
+    altura: 100,
     vivo: true,
   };
 
