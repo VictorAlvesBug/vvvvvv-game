@@ -34,14 +34,18 @@ function controlesMobile(funcComandos){
       if (Math.abs(xDiff) > Math.abs(yDiff)) {
         /*most significant*/
         if (xDiff > 0) {
+            xDown = xUp + 10
             funcComandos.onSwipeLeft && funcComandos.onSwipeLeft(firstTouch);
         } else {
+            xDown = xUp - 10
             funcComandos.onSwipeRight && funcComandos.onSwipeRight(firstTouch);
         }
       } else {
         if (yDiff > 0) {
+            yDown = yUp + 10
             funcComandos.onSwipeUp && funcComandos.onSwipeUp(firstTouch);
         } else {
+            yDown = yUp - 10
             funcComandos.onSwipeDown && funcComandos.onSwipeDown(firstTouch);
         }
       }
