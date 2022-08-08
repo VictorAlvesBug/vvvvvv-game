@@ -9,7 +9,7 @@ function criarJogo(gameBoard) {
   // 'andar' para que a movimentação seja mais rápida, porém não exigindo que
   // a atualização do canvas seja executada na mesma frequência. 
   const velocidadeGravidade = 30;
-  const velocidadeAndar = 12 ;
+  const velocidadeAndar = 8;
 
   const tela = criarTela(gameBoard);
 
