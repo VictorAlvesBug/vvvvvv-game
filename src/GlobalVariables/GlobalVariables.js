@@ -4,15 +4,15 @@ class GlobalVariables {
       return GlobalVariables.instancia;
     }
 
+    this.idTelaAtual = 1;
+
     this.listaObjetos = [];
 
     this.listaTodosCheckpoints = [];
 
     this.idUltimoCheckpoint;
-    this.gravidadeUltimoCheckpoint;
-    this.idTelaUltimoCheckpoint;
-
-    this.idTelaAtual = 1;
+    this.gravidadeUltimoCheckpoint = false;
+    this.idTelaUltimoCheckpoint = this.idTelaAtual;
 
     this.gerarId = function* () {
       let id = 1;

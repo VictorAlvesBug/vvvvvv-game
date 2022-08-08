@@ -7,6 +7,7 @@ const mapValue = (value, minIn, maxIn, minOut, maxOut) => {
 };
 
 const criarTela = (gameBoard) => {
+
   const canvas = gameBoard.querySelector('#canvas');
   const contexto = canvas.getContext('2d');
 
