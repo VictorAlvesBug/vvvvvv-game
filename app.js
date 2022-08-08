@@ -20,13 +20,15 @@ if (ehMobile) {
             comandosPressionados['ArrowRight'] = jogo.controles['ArrowRight'];
         }
     },
+    onTouchDown: (firstTouch) => {
+        if(firstTouch.clientX >= document.body.getBoundingClientRect().width/2){
+            jogo.controles['Space']()
+        }
+    },
     onTouchUp: (firstTouch) => {
         if(firstTouch.clientX < document.body.getBoundingClientRect().width/2){
             comandosPressionados['ArrowLeft'] = null;
             comandosPressionados['ArrowRight'] = null;
-        }
-        else{
-            jogo.controles['Space']()
         }
     },
   });
