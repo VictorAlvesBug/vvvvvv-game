@@ -132,7 +132,7 @@ const criarTela = (gameBoard) => {
 
         switch (enumBloco) {
           case tipoObjetoEnum.CHAO:
-            contexto.fillStyle = telaAtual.corPrincipal;
+            contexto.fillStyle = telaAtual.corPrincipalChao;
             contexto.beginPath();
             contexto.rect(
               posicaoX,
@@ -154,7 +154,7 @@ const criarTela = (gameBoard) => {
           case tipoObjetoEnum.ESPINHO_BAIXO:
           case tipoObjetoEnum.ESPINHO_ESQUERDA:
           case tipoObjetoEnum.ESPINHO_DIREITA:
-            contexto.strokeStyle = telaAtual.corPrincipal;
+            contexto.strokeStyle = telaAtual.corBordaChao;
             const coords = retornarCoordenadasEspinho(
               posicaoX,
               posicaoY,
@@ -178,6 +178,162 @@ const criarTela = (gameBoard) => {
               tipo: enumBloco,
             });
             break;
+        }
+      }
+    }
+
+    // Desenhando bordas
+    for (let linha = 0; linha < qtdeLinhas; linha++) {
+      for (let coluna = 0; coluna < qtdeColunas; coluna++) {
+        const indiceGrid = linha * qtdeColunas + coluna;
+        const enumBloco = Number(telaAtual.grid[indiceGrid]);
+        const posicaoX = Math.round(
+          mapValue(coluna, 0, qtdeColunas, 0, canvas.width)
+        );
+        const posicaoY = Math.round(
+          mapValue(linha, 0, qtdeLinhas, 0, canvas.height)
+        );
+
+        if (enumBloco === tipoObjetoEnum.CHAO) {
+          let indiceGridCima = indiceGrid;
+          let indiceGridBaixo = indiceGrid;
+          let indiceGridEsquerda = indiceGrid;
+          let indiceGridDireita = indiceGrid;
+          let indiceGridCimaEsquerda = indiceGrid;
+          let indiceGridBaixoEsquerda = indiceGrid;
+          let indiceGridCimaDireita = indiceGrid;
+          let indiceGridBaixoDireita = indiceGrid;
+
+          if (linha - 1 >= 0) {
+            indiceGridCima = (linha - 1) * qtdeColunas + coluna;
+          }
+
+          if (linha + 1 < qtdeLinhas) {
+            indiceGridBaixo = (linha + 1) * qtdeColunas + coluna;
+          }
+
+          if (coluna - 1 >= 0) {
+            indiceGridEsquerda = linha * qtdeColunas + (coluna - 1);
+          }
+
+          if (coluna + 1 < qtdeColunas) {
+            indiceGridDireita = linha * qtdeColunas + (coluna + 1);
+          }
+
+          if (linha - 1 >= 0 && coluna - 1 >= 0) {
+            indiceGridCimaEsquerda = (linha - 1) * qtdeColunas + (coluna - 1);
+          }
+
+          if (linha + 1 < qtdeLinhas && coluna - 1 >= 0) {
+            indiceGridBaixoEsquerda = (linha + 1) * qtdeColunas + (coluna - 1);
+          }
+
+          if (linha - 1 >= 0 && coluna + 1 < qtdeColunas) {
+            indiceGridCimaDireita = (linha - 1) * qtdeColunas + (coluna + 1);
+          }
+
+          if (linha + 1 < qtdeLinhas && coluna + 1 < qtdeColunas) {
+            indiceGridBaixoDireita = (linha + 1) * qtdeColunas + (coluna + 1);
+          }
+
+          const espessuraBordaVertical = 9;
+          const espessuraBordaHorizontal = 16;
+
+          if (Number(telaAtual.grid[indiceGridCima]) !== tipoObjetoEnum.CHAO) {
+            contexto.fillStyle = telaAtual.corBordaChao;
+            contexto.beginPath();
+            contexto.rect(
+              posicaoX,
+              posicaoY,
+              larguraBloco + 1,
+              espessuraBordaHorizontal + 1
+            );
+            contexto.fill();
+          }
+
+          if (Number(telaAtual.grid[indiceGridBaixo]) !== tipoObjetoEnum.CHAO) {
+            contexto.fillStyle = telaAtual.corBordaChao;
+            contexto.beginPath();
+            contexto.rect(
+              posicaoX,
+              posicaoY + (alturaBloco - espessuraBordaHorizontal),
+              larguraBloco + 1,
+              espessuraBordaHorizontal + 1
+            );
+            contexto.fill();
+          }
+
+          if (Number(telaAtual.grid[indiceGridEsquerda]) !== tipoObjetoEnum.CHAO) {
+            contexto.fillStyle = telaAtual.corBordaChao;
+            contexto.beginPath();
+            contexto.rect(
+              posicaoX,
+              posicaoY,
+              espessuraBordaVertical + 1,
+              alturaBloco + 1
+            );
+            contexto.fill();
+          }
+
+          if (Number(telaAtual.grid[indiceGridDireita]) !== tipoObjetoEnum.CHAO) {
+            contexto.fillStyle = telaAtual.corBordaChao;
+            contexto.beginPath();
+            contexto.rect(
+              posicaoX + (larguraBloco - espessuraBordaVertical),
+              posicaoY,
+              espessuraBordaVertical + 1,
+              alturaBloco + 1
+            );
+            contexto.fill();
+          }
+
+          if (Number(telaAtual.grid[indiceGridCimaEsquerda]) !== tipoObjetoEnum.CHAO) {
+            contexto.fillStyle = telaAtual.corBordaChao;
+            contexto.beginPath();
+            contexto.rect(
+              posicaoX,
+              posicaoY,
+              espessuraBordaVertical + 1,
+              espessuraBordaHorizontal + 1
+            );
+            contexto.fill();
+          }
+
+          if (Number(telaAtual.grid[indiceGridBaixoEsquerda]) !== tipoObjetoEnum.CHAO) {
+            contexto.fillStyle = telaAtual.corBordaChao;
+            contexto.beginPath();
+            contexto.rect(
+              posicaoX,
+              posicaoY + (alturaBloco - espessuraBordaHorizontal),
+              espessuraBordaVertical + 1,
+              espessuraBordaHorizontal + 1
+            );
+            contexto.fill();
+          }
+
+          if (Number(telaAtual.grid[indiceGridCimaDireita]) !== tipoObjetoEnum.CHAO) {
+            contexto.fillStyle = telaAtual.corBordaChao;
+            contexto.beginPath();
+            contexto.rect(
+              posicaoX + (larguraBloco - espessuraBordaVertical),
+              posicaoY,
+              espessuraBordaVertical + 1,
+              espessuraBordaHorizontal + 1
+            );
+            contexto.fill();
+          }
+
+          if (Number(telaAtual.grid[indiceGridBaixoDireita]) !== tipoObjetoEnum.CHAO) {
+            contexto.fillStyle = telaAtual.corBordaChao;
+            contexto.beginPath();
+            contexto.rect(
+              posicaoX + (larguraBloco - espessuraBordaVertical),
+              posicaoY + (alturaBloco - espessuraBordaHorizontal),
+              espessuraBordaVertical + 1,
+              espessuraBordaHorizontal + 1
+            );
+            contexto.fill();
+          }
         }
       }
     }

@@ -38,7 +38,8 @@ listaTelas.push({
     '111111000011001111111111111111' +
     '111111000011331111111111111111' +
     '111111000011111111111111111111',
-  corPrincipal: '#edf190',
+  corPrincipalChao: '#fef3a3',
+  corBordaChao: '#cbc070',
   corInimigo: '#f2f012',
   listaInimigos: [
     {
@@ -130,7 +131,8 @@ listaTelas.push({
     '111111000011111111111111111111' +
     '111111000011111111111111111111' +
     '111111000011111111111111111111',
-  corPrincipal: '#d54a68',
+  corPrincipalChao: '#e65b79',
+  corBordaChao: '#b32846',
   corInimigo: '#f2f012',
   listaInimigos: [],
   listaCheckpoints: [],
@@ -171,7 +173,8 @@ listaTelas.push({
     '111111111111111111110000111111' +
     '111111111111111111110000111111' +
     '111111111111111111110000111111',
-  corPrincipal: '#edf190',
+  corPrincipalChao: '#fef3a3',
+  corBordaChao: '#cbc070',
   corInimigo: '#f2f012',
   listaInimigos: [],
   listaCheckpoints: [],
@@ -212,7 +215,8 @@ listaTelas.push({
     '111111000011111111111111111111' +
     '111111000011111111111111111111' +
     '111111000011111111111111111111',
-  corPrincipal: '#5ee4e7',
+  corPrincipalChao: '#6ff5f8',
+  corBordaChao: '#3cc2c5',
   corInimigo: '#f2f012',
   listaInimigos: [],
   listaCheckpoints: [],
@@ -253,7 +257,8 @@ listaTelas.push({
     '111111111111111111111111111111' +
     '111111111111111111111111111111' +
     '111111111111111111111111111111',
-  corPrincipal: '#d42204',
+  corPrincipalChao: '#e53335',
+  corBordaChao: '#b20002',
   corInimigo: '#f2f012',
   listaInimigos: [],
   listaCheckpoints: [],
@@ -294,7 +299,8 @@ listaTelas.push({
     '111111111111111111111111111111' +
     '111111111111111111111111111111' +
     '111111111111111111111111111111',
-  corPrincipal: '#726fa1',
+  corPrincipalChao: '#837fb3',
+  corBordaChao: '#504c80',
   corInimigo: '#f2f012',
   listaInimigos: [],
   listaCheckpoints: [],
