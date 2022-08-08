@@ -13,7 +13,7 @@ function controlesMobile(funcComandos){
     }
     
     function handleTouchStart(evt) {
-      firstTouch = getTouches(evt)[0];
+      firstTouch = Array.from(getTouches(evt)).slice(-1)[0];
       xDown = firstTouch.clientX;
       yDown = firstTouch.clientY;
 
