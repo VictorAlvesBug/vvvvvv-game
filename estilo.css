@@ -7,7 +7,7 @@
 
 #game-board{
     position: relative;
-    background-color: #000;
+    background-color: #222;
     max-width: 100%;
     max-height: 100vh;
     aspect-ratio: 16 / 9;

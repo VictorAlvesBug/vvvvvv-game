@@ -188,6 +188,10 @@ const criarTela = (gameBoard) => {
     }
 
     // Desenhando bordas
+    const espessuraBordaVertical = 9;
+    const espessuraBordaHorizontal = 16;
+    contexto.fillStyle = telaAtual.corBordaChao;
+
     for (let linha = 0; linha < qtdeLinhas; linha++) {
       for (let coluna = 0; coluna < qtdeColunas; coluna++) {
         const indiceGrid = linha * qtdeColunas + coluna;
@@ -241,11 +245,7 @@ const criarTela = (gameBoard) => {
             indiceGridBaixoDireita = (linha + 1) * qtdeColunas + (coluna + 1);
           }
 
-          const espessuraBordaVertical = 9;
-          const espessuraBordaHorizontal = 16;
-
           if (Number(telaAtual.grid[indiceGridCima]) !== tipoObjetoEnum.CHAO) {
-            contexto.fillStyle = telaAtual.corBordaChao;
             contexto.beginPath();
             contexto.rect(
               posicaoX,
@@ -257,7 +257,6 @@ const criarTela = (gameBoard) => {
           }
 
           if (Number(telaAtual.grid[indiceGridBaixo]) !== tipoObjetoEnum.CHAO) {
-            contexto.fillStyle = telaAtual.corBordaChao;
             contexto.beginPath();
             contexto.rect(
               posicaoX,
@@ -271,7 +270,6 @@ const criarTela = (gameBoard) => {
           if (
             Number(telaAtual.grid[indiceGridEsquerda]) !== tipoObjetoEnum.CHAO
           ) {
-            contexto.fillStyle = telaAtual.corBordaChao;
             contexto.beginPath();
             contexto.rect(
               posicaoX,
@@ -285,7 +283,6 @@ const criarTela = (gameBoard) => {
           if (
             Number(telaAtual.grid[indiceGridDireita]) !== tipoObjetoEnum.CHAO
           ) {
-            contexto.fillStyle = telaAtual.corBordaChao;
             contexto.beginPath();
             contexto.rect(
               posicaoX + (larguraBloco - espessuraBordaVertical),
@@ -298,9 +295,8 @@ const criarTela = (gameBoard) => {
 
           if (
             Number(telaAtual.grid[indiceGridCimaEsquerda]) !==
-            tipoObjetoEnum.CHAO
+              tipoObjetoEnum.CHAO
           ) {
-            contexto.fillStyle = telaAtual.corBordaChao;
             contexto.beginPath();
             contexto.rect(
               posicaoX,
@@ -313,9 +309,8 @@ const criarTela = (gameBoard) => {
 
           if (
             Number(telaAtual.grid[indiceGridBaixoEsquerda]) !==
-            tipoObjetoEnum.CHAO
+              tipoObjetoEnum.CHAO
           ) {
-            contexto.fillStyle = telaAtual.corBordaChao;
             contexto.beginPath();
             contexto.rect(
               posicaoX,
@@ -328,9 +323,8 @@ const criarTela = (gameBoard) => {
 
           if (
             Number(telaAtual.grid[indiceGridCimaDireita]) !==
-            tipoObjetoEnum.CHAO
+              tipoObjetoEnum.CHAO
           ) {
-            contexto.fillStyle = telaAtual.corBordaChao;
             contexto.beginPath();
             contexto.rect(
               posicaoX + (larguraBloco - espessuraBordaVertical),
@@ -343,9 +337,8 @@ const criarTela = (gameBoard) => {
 
           if (
             Number(telaAtual.grid[indiceGridBaixoDireita]) !==
-            tipoObjetoEnum.CHAO
+              tipoObjetoEnum.CHAO
           ) {
-            contexto.fillStyle = telaAtual.corBordaChao;
             contexto.beginPath();
             contexto.rect(
               posicaoX + (larguraBloco - espessuraBordaVertical),
