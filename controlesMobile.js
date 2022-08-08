@@ -46,8 +46,8 @@ function controlesMobile(funcComandos){
         }
       }
       /* reset values */
-      xDown = null;
-      yDown = null;
+      //xDown = null;
+      //yDown = null;
     }
 
     function handleTouchEnd (evt){

@@ -13,15 +13,17 @@ if (ehMobile) {
     onSwipeLeft: (firstTouch) => {
         if(firstTouch.clientX < document.body.getBoundingClientRect().width/2){
             comandosPressionados['ArrowLeft'] = jogo.controles['ArrowLeft'];
+            comandosPressionados['ArrowRight'] = null;
         }
     },
     onSwipeRight: (firstTouch) => {
         if(firstTouch.clientX < document.body.getBoundingClientRect().width/2){
             comandosPressionados['ArrowRight'] = jogo.controles['ArrowRight'];
+            comandosPressionados['ArrowLeft'] = null;
         }
     },
-    onTouchDown: (firstTouch) => {
-        if(firstTouch.clientX >= document.body.getBoundingClientRect().width/2){
+    onTouchDown: (lastTouch) => {
+        if(lastTouch.clientX >= document.body.getBoundingClientRect().width/2){
             jogo.controles['Space']()
         }
     },
