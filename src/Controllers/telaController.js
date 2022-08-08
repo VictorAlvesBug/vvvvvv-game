@@ -7,7 +7,6 @@ const mapValue = (value, minIn, maxIn, minOut, maxOut) => {
 };
 
 const criarTela = (gameBoard) => {
-
   const canvas = gameBoard.querySelector('#canvas');
   const contexto = canvas.getContext('2d');
 
@@ -264,7 +263,9 @@ const criarTela = (gameBoard) => {
             contexto.fill();
           }
 
-          if (Number(telaAtual.grid[indiceGridEsquerda]) !== tipoObjetoEnum.CHAO) {
+          if (
+            Number(telaAtual.grid[indiceGridEsquerda]) !== tipoObjetoEnum.CHAO
+          ) {
             contexto.fillStyle = telaAtual.corBordaChao;
             contexto.beginPath();
             contexto.rect(
@@ -276,7 +277,9 @@ const criarTela = (gameBoard) => {
             contexto.fill();
           }
 
-          if (Number(telaAtual.grid[indiceGridDireita]) !== tipoObjetoEnum.CHAO) {
+          if (
+            Number(telaAtual.grid[indiceGridDireita]) !== tipoObjetoEnum.CHAO
+          ) {
             contexto.fillStyle = telaAtual.corBordaChao;
             contexto.beginPath();
             contexto.rect(
@@ -288,7 +291,10 @@ const criarTela = (gameBoard) => {
             contexto.fill();
           }
 
-          if (Number(telaAtual.grid[indiceGridCimaEsquerda]) !== tipoObjetoEnum.CHAO) {
+          if (
+            Number(telaAtual.grid[indiceGridCimaEsquerda]) !==
+            tipoObjetoEnum.CHAO
+          ) {
             contexto.fillStyle = telaAtual.corBordaChao;
             contexto.beginPath();
             contexto.rect(
@@ -300,7 +306,10 @@ const criarTela = (gameBoard) => {
             contexto.fill();
           }
 
-          if (Number(telaAtual.grid[indiceGridBaixoEsquerda]) !== tipoObjetoEnum.CHAO) {
+          if (
+            Number(telaAtual.grid[indiceGridBaixoEsquerda]) !==
+            tipoObjetoEnum.CHAO
+          ) {
             contexto.fillStyle = telaAtual.corBordaChao;
             contexto.beginPath();
             contexto.rect(
@@ -312,7 +321,10 @@ const criarTela = (gameBoard) => {
             contexto.fill();
           }
 
-          if (Number(telaAtual.grid[indiceGridCimaDireita]) !== tipoObjetoEnum.CHAO) {
+          if (
+            Number(telaAtual.grid[indiceGridCimaDireita]) !==
+            tipoObjetoEnum.CHAO
+          ) {
             contexto.fillStyle = telaAtual.corBordaChao;
             contexto.beginPath();
             contexto.rect(
@@ -324,7 +336,10 @@ const criarTela = (gameBoard) => {
             contexto.fill();
           }
 
-          if (Number(telaAtual.grid[indiceGridBaixoDireita]) !== tipoObjetoEnum.CHAO) {
+          if (
+            Number(telaAtual.grid[indiceGridBaixoDireita]) !==
+            tipoObjetoEnum.CHAO
+          ) {
             contexto.fillStyle = telaAtual.corBordaChao;
             contexto.beginPath();
             contexto.rect(
@@ -347,8 +362,8 @@ const criarTela = (gameBoard) => {
     const larguraBloco = canvas.width / (qtdeColunas - 1);
     const alturaBloco = canvas.height / (qtdeLinhas - 1);
 
-    const largura = larguraBloco * 0.8;
-    const altura = alturaBloco * 0.8;
+    const largura = larguraBloco * 1.6;
+    const altura = alturaBloco * 2;
 
     telaAtual.listaInimigos.forEach((inimigo) => {
       let posicaoAtualInimigo = {};
@@ -419,13 +434,13 @@ const criarTela = (gameBoard) => {
   };
 
   const desenharCheckpoints = () => {
-    const larguraCheckpoint = 40;
+    const larguraCheckpoint = 35;
     const alturaCheckpoint = 80;
 
     telaAtual.listaCheckpoints.forEach((checkpoint) => {
       const ehUltimoCheckpoint =
         checkpoint.id === globalVariables.idUltimoCheckpoint;
-      contexto.fillStyle = ehUltimoCheckpoint ? '#dddddd' : '#666666';
+      contexto.fillStyle = ehUltimoCheckpoint ? '#bbbbbb' : '#555555';
       contexto.beginPath();
       contexto.rect(
         checkpoint.posicaoX,
@@ -453,10 +468,10 @@ const criarTela = (gameBoard) => {
     redimensionarCanvas();
     limparCanvas();
     limparListaObjetos();
-    desenharPersonagem(personagem);
     desenharEstruturaTela();
     desenharInimigos();
     desenharCheckpoints();
+    desenharPersonagem(personagem);
   };
 
   return {
