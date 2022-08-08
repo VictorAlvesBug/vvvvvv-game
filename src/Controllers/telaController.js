@@ -57,6 +57,8 @@ const criarTela = (gameBoard) => {
   ) => {
     let x1, y1, x2, y2, x3, y3;
 
+    const adicionalPonta = 50;
+
     switch (enumEspinho) {
       case tipoObjetoEnum.ESPINHO_CIMA:
         // Espinho em cima, apontando para baixo
@@ -65,7 +67,7 @@ const criarTela = (gameBoard) => {
         x2 = posicaoX + largura;
         y2 = posicaoY;
         x3 = posicaoX + largura / 2;
-        y3 = posicaoY + altura;
+        y3 = posicaoY + altura + adicionalPonta;
         break;
       case tipoObjetoEnum.ESPINHO_BAIXO:
         // Espinho em baixo, apontando para cima
@@ -74,7 +76,7 @@ const criarTela = (gameBoard) => {
         x2 = posicaoX + largura;
         y2 = posicaoY + altura;
         x3 = posicaoX + largura / 2;
-        y3 = posicaoY;
+        y3 = posicaoY - adicionalPonta;
         break;
       case tipoObjetoEnum.ESPINHO_ESQUERDA:
         // Espinho na esquerda, apontando para a direita
@@ -82,7 +84,7 @@ const criarTela = (gameBoard) => {
         y1 = posicaoY;
         x2 = posicaoX;
         y2 = posicaoY + altura;
-        x3 = posicaoX + largura;
+        x3 = posicaoX + largura + adicionalPonta;
         y3 = posicaoY + altura / 2;
         break;
       case tipoObjetoEnum.ESPINHO_DIREITA:
@@ -91,7 +93,7 @@ const criarTela = (gameBoard) => {
         y1 = posicaoY;
         x2 = posicaoX + largura;
         y2 = posicaoY + altura;
-        x3 = posicaoX;
+        x3 = posicaoX - adicionalPonta;
         y3 = posicaoY + altura / 2;
         break;
 
@@ -99,7 +101,6 @@ const criarTela = (gameBoard) => {
         return console.error(
           'Tipo de objeto não esperado, favor passar o tipo espinho.'
         );
-        break;
     }
 
     return {
@@ -109,6 +110,10 @@ const criarTela = (gameBoard) => {
       y2: Math.round(y2),
       x3: Math.round(x3),
       y3: Math.round(y3),
+      xMin: Math.min(x1, x2, x3),
+      xMax: Math.max(x1, x2, x3),
+      yMin: Math.min(y1, y2, y3),
+      yMax: Math.max(y1, y2, y3),
     };
   };
 
@@ -154,7 +159,7 @@ const criarTela = (gameBoard) => {
           case tipoObjetoEnum.ESPINHO_BAIXO:
           case tipoObjetoEnum.ESPINHO_ESQUERDA:
           case tipoObjetoEnum.ESPINHO_DIREITA:
-            contexto.strokeStyle = telaAtual.corBordaChao;
+            contexto.fillStyle = telaAtual.corBordaChao;
             const coords = retornarCoordenadasEspinho(
               posicaoX,
               posicaoY,
@@ -168,13 +173,13 @@ const criarTela = (gameBoard) => {
             contexto.lineTo(coords.x2, coords.y2);
             contexto.lineTo(coords.x3, coords.y3);
             contexto.lineTo(coords.x1, coords.y1);
-            contexto.stroke();
+            contexto.fill();
             globalVariables.listaObjetos.push({
               id: geradorId.next().value,
-              posicaoX: posicaoX,
-              posicaoY: posicaoY,
-              largura: larguraBloco,
-              altura: alturaBloco,
+              posicaoX: coords.xMin,
+              posicaoY: coords.yMin,
+              largura: coords.xMax - coords.xMin,
+              altura: coords.yMax - coords.yMin,
               tipo: enumBloco,
             });
             break;

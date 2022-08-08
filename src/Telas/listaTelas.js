@@ -3,8 +3,23 @@ import GlobalVariables from '../GlobalVariables/GlobalVariables.js';
 const globalVariables = new GlobalVariables();
 const geradorId = globalVariables.gerarId();
 
+const listaCoresChao = [
+  { corPrincipal: '#fef3a3', corBorda: '#cbc070' },
+  { corPrincipal: '#e65b79', corBorda: '#b32846' },
+  { corPrincipal: '#fef3a3', corBorda: '#cbc070' },
+  { corPrincipal: '#6ff5f8', corBorda: '#3cc2c5' },
+  { corPrincipal: '#e53335', corBorda: '#b20002' },
+  { corPrincipal: '#837fb3', corBorda: '#504c80' },
+  { corPrincipal: '#000000', corBorda: '#01c8f7' },
+  { corPrincipal: '#a6454e', corBorda: '#e65f6b' },
+  { corPrincipal: '#639d3b', corBorda: '#9fff5d' },
+];
+
+let indiceCorChao;
+
 const listaTelas = [];
 
+indiceCorChao = Math.floor(Math.random() * listaCoresChao.length);
 listaTelas.push({
   id: 1,
   grid:
@@ -38,8 +53,8 @@ listaTelas.push({
     '111111000011001111111111111111' +
     '111111000011331111111111111111' +
     '111111000011111111111111111111',
-  corPrincipalChao: '#fef3a3',
-  corBordaChao: '#cbc070',
+  corPrincipalChao: listaCoresChao[indiceCorChao].corPrincipal,
+  corBordaChao: listaCoresChao[indiceCorChao].corBorda,
   corInimigo: '#f2f012',
   listaInimigos: [
     {
@@ -98,6 +113,7 @@ listaTelas.push({
   idTelaBaixo: 6,
 });
 
+indiceCorChao = Math.floor(Math.random() * listaCoresChao.length);
 listaTelas.push({
   id: 2,
   grid:
@@ -131,8 +147,8 @@ listaTelas.push({
     '111111000011111111111111111111' +
     '111111000011111111111111111111' +
     '111111000011111111111111111111',
-  corPrincipalChao: '#e65b79',
-  corBordaChao: '#b32846',
+  corPrincipalChao: listaCoresChao[indiceCorChao].corPrincipal,
+  corBordaChao: listaCoresChao[indiceCorChao].corBorda,
   corInimigo: '#f2f012',
   listaInimigos: [],
   listaCheckpoints: [],
@@ -140,6 +156,7 @@ listaTelas.push({
   idTelaBaixo: 1,
 });
 
+indiceCorChao = Math.floor(Math.random() * listaCoresChao.length);
 listaTelas.push({
   id: 3,
   grid:
@@ -173,8 +190,8 @@ listaTelas.push({
     '111111111111111111110000111111' +
     '111111111111111111110000111111' +
     '111111111111111111110000111111',
-  corPrincipalChao: '#fef3a3',
-  corBordaChao: '#cbc070',
+  corPrincipalChao: listaCoresChao[indiceCorChao].corPrincipal,
+  corBordaChao: listaCoresChao[indiceCorChao].corBorda,
   corInimigo: '#f2f012',
   listaInimigos: [],
   listaCheckpoints: [],
@@ -182,6 +199,7 @@ listaTelas.push({
   idTelaBaixo: 4,
 });
 
+indiceCorChao = Math.floor(Math.random() * listaCoresChao.length);
 listaTelas.push({
   id: 4,
   grid:
@@ -215,8 +233,8 @@ listaTelas.push({
     '111111000011111111111111111111' +
     '111111000011111111111111111111' +
     '111111000011111111111111111111',
-  corPrincipalChao: '#6ff5f8',
-  corBordaChao: '#3cc2c5',
+  corPrincipalChao: listaCoresChao[indiceCorChao].corPrincipal,
+  corBordaChao: listaCoresChao[indiceCorChao].corBorda,
   corInimigo: '#f2f012',
   listaInimigos: [],
   listaCheckpoints: [],
@@ -224,6 +242,7 @@ listaTelas.push({
   idTelaCima: 3,
 });
 
+indiceCorChao = Math.floor(Math.random() * listaCoresChao.length);
 listaTelas.push({
   id: 5,
   grid:
@@ -257,8 +276,8 @@ listaTelas.push({
     '111111111111111111111111111111' +
     '111111111111111111111111111111' +
     '111111111111111111111111111111',
-  corPrincipalChao: '#e53335',
-  corBordaChao: '#b20002',
+  corPrincipalChao: listaCoresChao[indiceCorChao].corPrincipal,
+  corBordaChao: listaCoresChao[indiceCorChao].corBorda,
   corInimigo: '#f2f012',
   listaInimigos: [],
   listaCheckpoints: [],
@@ -266,6 +285,7 @@ listaTelas.push({
   idTelaCima: 4,
 });
 
+indiceCorChao = Math.floor(Math.random() * listaCoresChao.length);
 listaTelas.push({
   id: 6,
   grid:
@@ -299,8 +319,8 @@ listaTelas.push({
     '111111111111111111111111111111' +
     '111111111111111111111111111111' +
     '111111111111111111111111111111',
-  corPrincipalChao: '#837fb3',
-  corBordaChao: '#504c80',
+  corPrincipalChao: listaCoresChao[indiceCorChao].corPrincipal,
+  corBordaChao: listaCoresChao[indiceCorChao].corBorda,
   corInimigo: '#f2f012',
   listaInimigos: [],
   listaCheckpoints: [],
@@ -308,8 +328,8 @@ listaTelas.push({
   idTelaCima: 1,
 });
 
-listaTelas.forEach(tela => {
-  globalVariables.listaTodosCheckpoints = 
+listaTelas.forEach((tela) => {
+  globalVariables.listaTodosCheckpoints =
     globalVariables.listaTodosCheckpoints.concat(tela.listaCheckpoints);
 });
 
