@@ -6,6 +6,11 @@ const mapValue = (value, minIn, maxIn, minOut, maxOut) => {
   return ((value - minIn) / (maxIn - minIn)) * (maxOut - minOut) + minOut;
 };
 
+function regexIndexOf(texto, regex, offsetInicio) {
+  var indice = texto.slice(offsetInicio).search(regex);
+  return indice < 0 ? indice : indice + offsetInicio;
+}
+
 const criarTela = (gameBoard) => {
   const canvas = gameBoard.querySelector('#canvas');
   const contexto = canvas.getContext('2d');
@@ -124,6 +129,31 @@ const criarTela = (gameBoard) => {
     const larguraBloco = Math.round(canvas.width / (qtdeColunas - 0));
     const alturaBloco = Math.round(canvas.height / (qtdeLinhas - 0));
 
+    for(let linha=0; linha<qtdeLinhas;linha++){
+
+      const indiceInicio = linha*qtdeColunas;
+      const indiceTermino = (linha+1)*qtdeColunas;
+      // Recupera apenas o trecho do grid que representa esta linha de blocos da tela
+      const blocosLinha = telaAtual.grid.slice(indiceInicio, indiceTermino);
+      // Substitui tudo que não for 1......
+      const blocosLinhaChao = blocosLinha.replaceAll(/[^1]/g, '0')
+      contexto.font = "30px Arial";
+      contexto.fillText(blocosLinhaChao, 100, linha*alturaBloco)
+
+
+      //contexto.fillStyle = telaAtual.corPrincipalChao;
+      contexto.fillStyle = '#ff0000';
+            /*contexto.beginPath();
+            contexto.rect(
+              100,
+              linha*alturaBloco,
+              20,
+              20
+            );*/
+            contexto.fill();
+    }
+
+
     for (let linha = 0; linha < qtdeLinhas; linha++) {
       for (let coluna = 0; coluna < qtdeColunas; coluna++) {
         const indiceGrid = linha * qtdeColunas + coluna;
@@ -137,7 +167,7 @@ const criarTela = (gameBoard) => {
 
         switch (enumBloco) {
           case tipoObjetoEnum.CHAO:
-            contexto.fillStyle = telaAtual.corPrincipalChao;
+            /*contexto.fillStyle = telaAtual.corPrincipalChao;
             contexto.beginPath();
             contexto.rect(
               posicaoX,
@@ -145,7 +175,7 @@ const criarTela = (gameBoard) => {
               larguraBloco + 1,
               alturaBloco + 1
             );
-            contexto.fill();
+            contexto.fill();*/
             globalVariables.listaObjetos.push({
               id: geradorId.next().value,
               posicaoX: posicaoX,
@@ -159,7 +189,6 @@ const criarTela = (gameBoard) => {
           case tipoObjetoEnum.ESPINHO_BAIXO:
           case tipoObjetoEnum.ESPINHO_ESQUERDA:
           case tipoObjetoEnum.ESPINHO_DIREITA:
-            contexto.fillStyle = telaAtual.corBordaChao;
             const coords = retornarCoordenadasEspinho(
               posicaoX,
               posicaoY,
@@ -167,6 +196,7 @@ const criarTela = (gameBoard) => {
               alturaBloco,
               enumBloco
             );
+            contexto.fillStyle = telaAtual.corBordaChao;
             contexto.lineWidth = 2;
             contexto.beginPath();
             contexto.moveTo(coords.x1, coords.y1);
@@ -295,7 +325,7 @@ const criarTela = (gameBoard) => {
 
           if (
             Number(telaAtual.grid[indiceGridCimaEsquerda]) !==
-              tipoObjetoEnum.CHAO
+            tipoObjetoEnum.CHAO
           ) {
             contexto.beginPath();
             contexto.rect(
@@ -309,7 +339,7 @@ const criarTela = (gameBoard) => {
 
           if (
             Number(telaAtual.grid[indiceGridBaixoEsquerda]) !==
-              tipoObjetoEnum.CHAO
+            tipoObjetoEnum.CHAO
           ) {
             contexto.beginPath();
             contexto.rect(
@@ -323,7 +353,7 @@ const criarTela = (gameBoard) => {
 
           if (
             Number(telaAtual.grid[indiceGridCimaDireita]) !==
-              tipoObjetoEnum.CHAO
+            tipoObjetoEnum.CHAO
           ) {
             contexto.beginPath();
             contexto.rect(
@@ -337,7 +367,7 @@ const criarTela = (gameBoard) => {
 
           if (
             Number(telaAtual.grid[indiceGridBaixoDireita]) !==
-              tipoObjetoEnum.CHAO
+            tipoObjetoEnum.CHAO
           ) {
             contexto.beginPath();
             contexto.rect(
