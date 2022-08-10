@@ -87,6 +87,11 @@ function criarMovimento(gameBoard) {
       }
     }
 
+    if(saiuDaTela(personagem))
+    {
+      podeAlterarGravidade = false;
+    }
+
     if (!estaNoChao && !sofreuDano) {
       moverParaDirecao(direcao, personagem);
       if (ehDirecaoGravidade) {
@@ -115,6 +120,29 @@ function criarMovimento(gameBoard) {
     );
 
     return estaSobreChao && telaAtual.id === globalVariables.idTelaAtual;
+  };
+
+  const saiuDaTela = (personagem) => {
+    const { width: larguraTela, height: alturaTela } =
+      gameBoard.querySelector('#canvas');
+      
+    if (personagem.posicaoX < 0) {
+      return true;
+    }
+    
+    if (personagem.posicaoX + personagem.largura > 0 + larguraTela) {
+      return true;
+    }
+    
+    if (personagem.posicaoY < 0) {
+      return true;
+    }
+    
+    if (personagem.posicaoY + personagem.altura > 0 + alturaTela) {
+      return true;
+    }
+
+    return false;
   };
 
   const simularMovimentoNaDirecao = (direcao, personagem) => {

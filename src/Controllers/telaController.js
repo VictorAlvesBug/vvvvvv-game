@@ -126,65 +126,86 @@ const criarTela = (gameBoard) => {
     const qtdeColunas = 30;
     const qtdeLinhas = 30;
 
-    const larguraBloco = Math.round(canvas.width / (qtdeColunas - 0));
-    const alturaBloco = Math.round(canvas.height / (qtdeLinhas - 0));
+    const larguraBloco = canvas.width / (qtdeColunas - 0);
+    const alturaBloco = canvas.height / (qtdeLinhas - 0);
 
-    for(let linha=0; linha<qtdeLinhas;linha++){
+    // Desenha blocos de chão, de forma que 2 ou mais blocos consecutivos sejam
+    // representados por um mesmo retângulo
+    for (let linha = 0; linha < qtdeLinhas; linha++) {
+      // Define onde o retângulo vai começar verticalmente
+      const posicaoY = mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
 
-      const indiceInicio = linha*qtdeColunas;
-      const indiceTermino = (linha+1)*qtdeColunas;
       // Recupera apenas o trecho do grid que representa esta linha de blocos da tela
-      const blocosLinha = telaAtual.grid.slice(indiceInicio, indiceTermino);
-      // Substitui tudo que não for 1......
-      const blocosLinhaChao = blocosLinha.replaceAll(/[^1]/g, '0')
-      contexto.font = "30px Arial";
-      contexto.fillText(blocosLinhaChao, 100, linha*alturaBloco)
+      const indiceInicio = linha * qtdeColunas;
+      const indiceTermino = (linha + 1) * qtdeColunas;
+      let blocosLinha = telaAtual.grid.slice(indiceInicio, indiceTermino);
+      // Substitui tudo que NÃO for 1 para 0
+      blocosLinha = blocosLinha.replaceAll(/[^1]/g, '0');
 
+      // Enquanto existir algum bloco de chão não desenhado
+      while (blocosLinha.includes('1')) {
+        // Recupera os índices inicial e final do primeiro conjunto de chão
+        const indiceInicioChao = regexIndexOf(blocosLinha, '1', 0);
+        let indiceTerminoChao = regexIndexOf(blocosLinha, '10', 0);
 
-      //contexto.fillStyle = telaAtual.corPrincipalChao;
-      contexto.fillStyle = '#ff0000';
-            /*contexto.beginPath();
-            contexto.rect(
-              100,
-              linha*alturaBloco,
-              20,
-              20
-            );*/
-            contexto.fill();
+        // Caso não tenha encontrado o índice final quer dizer que o último
+        // bloco da linha é um chão, então usa o índice do último bloco da linha
+        if (indiceTerminoChao === -1) {
+          indiceTerminoChao = indiceTermino - 1;
+        }
+
+        // Calcula a quantidade de blocos de chão que o conjunto possui
+        const qtdeBlocosChao = indiceTerminoChao - indiceInicioChao + 1;
+
+        // Define onde o retângulo vai começar horizontalmente
+        const posicaoX = mapValue(
+          indiceInicioChao,
+          0,
+          qtdeColunas,
+          0,
+          canvas.width
+        );
+
+        // Desenha um retângulo único para o conjunto de chão's consecutivos
+        contexto.fillStyle = telaAtual.corPrincipalChao;
+        contexto.beginPath();
+        contexto.rect(
+          posicaoX,
+          posicaoY,
+          qtdeBlocosChao * larguraBloco + 1,
+          alturaBloco + 1
+        );
+        contexto.fill();
+
+        // Adiciona objeto de chão
+        globalVariables.listaObjetos.push({
+          id: geradorId.next().value,
+          posicaoX: posicaoX,
+          posicaoY: posicaoY,
+          largura: qtdeBlocosChao * larguraBloco + 1,
+          altura: alturaBloco + 1,
+          tipo: tipoObjetoEnum.CHAO,
+        });
+
+        // Substituindo caracteres do trecho já desenhado para '0',
+        // para ser desconsiderado na próxima iteração
+        const trechoAntesChao = blocosLinha.slice(0, indiceInicioChao);
+        const trechoChao = '0'.repeat(qtdeBlocosChao);
+        const trechoDepoisChao = blocosLinha.slice(indiceTerminoChao + 1);
+        blocosLinha = trechoAntesChao + trechoChao + trechoDepoisChao;
+      }
     }
 
-
+    // Desenha blocos de espinho
     for (let linha = 0; linha < qtdeLinhas; linha++) {
+      const posicaoY = mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
+
       for (let coluna = 0; coluna < qtdeColunas; coluna++) {
         const indiceGrid = linha * qtdeColunas + coluna;
         const enumBloco = Number(telaAtual.grid[indiceGrid]);
-        const posicaoX = Math.round(
-          mapValue(coluna, 0, qtdeColunas, 0, canvas.width)
-        );
-        const posicaoY = Math.round(
-          mapValue(linha, 0, qtdeLinhas, 0, canvas.height)
-        );
+        const posicaoX = mapValue(coluna, 0, qtdeColunas, 0, canvas.width);
 
         switch (enumBloco) {
-          case tipoObjetoEnum.CHAO:
-            /*contexto.fillStyle = telaAtual.corPrincipalChao;
-            contexto.beginPath();
-            contexto.rect(
-              posicaoX,
-              posicaoY,
-              larguraBloco + 1,
-              alturaBloco + 1
-            );
-            contexto.fill();*/
-            globalVariables.listaObjetos.push({
-              id: geradorId.next().value,
-              posicaoX: posicaoX,
-              posicaoY: posicaoY,
-              largura: larguraBloco + 1,
-              altura: alturaBloco + 1,
-              tipo: enumBloco,
-            });
-            break;
           case tipoObjetoEnum.ESPINHO_CIMA:
           case tipoObjetoEnum.ESPINHO_BAIXO:
           case tipoObjetoEnum.ESPINHO_ESQUERDA:
@@ -217,47 +238,255 @@ const criarTela = (gameBoard) => {
       }
     }
 
-    // Desenhando bordas
+    // Desenha bordas do chão, de forma que a borda de 2 ou mais blocos sejam
+    // representadas por um mesmo retângulo, desde que estejam alinhadas
+
     const espessuraBordaVertical = 9;
     const espessuraBordaHorizontal = 16;
+
+    // Desenhando bordas superiores
+    for (let linha = 1; linha < qtdeLinhas; linha++) {
+      // Define onde o retângulo vai começar verticalmente
+      const posicaoY = mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
+
+      // Recupera apenas o trecho do grid que representa esta linha
+      const indiceInicio = linha * qtdeColunas;
+      const indiceTermino = (linha + 1) * qtdeColunas;
+      let blocosLinha = telaAtual.grid.slice(indiceInicio, indiceTermino);
+      // Substitui tudo que NÃO for 1 para 0
+      blocosLinha = blocosLinha.replaceAll(/[^1]/g, '0');
+
+      // Recupera apenas o trecho do grid que representa a linha acima
+      const indiceInicioCima = (linha - 1) * qtdeColunas;
+      const indiceTerminoCima = linha * qtdeColunas;
+      let blocosLinhaCima = telaAtual.grid.slice(
+        indiceInicioCima,
+        indiceTerminoCima
+      );
+      // Substitui tudo que NÃO for 1 para 0
+      blocosLinhaCima = blocosLinhaCima.replaceAll(/[^1]/g, '0');
+
+      while (blocosLinha.includes('1')) {
+        let indiceInicioBorda = -1;
+        let indiceTerminoBorda = -1;
+        let anterioresTinhamBorda = false;
+
+        for (let coluna = 0; coluna < qtdeColunas; coluna++) {
+          const strBlocoAtual = blocosLinha[coluna];
+          const strBlocoCima = blocosLinhaCima[coluna];
+          if (strBlocoAtual === '1' && strBlocoCima === '0') {
+            if (indiceInicioBorda === -1) {
+              indiceInicioBorda = coluna;
+              anterioresTinhamBorda = true;
+            }
+            if (anterioresTinhamBorda) {
+              indiceTerminoBorda = coluna;
+            }
+          } else {
+            anterioresTinhamBorda = false;
+          }
+        }
+
+        // Calcula a quantidade de blocos de chão que o conjunto possui
+        const qtdeBlocosBorda = indiceTerminoBorda - indiceInicioBorda + 1;
+
+        // Define onde o retângulo vai começar horizontalmente
+        const posicaoX = mapValue(
+          indiceInicioBorda,
+          0,
+          qtdeColunas,
+          0,
+          canvas.width
+        );
+        if (indiceInicioBorda !== -1 && indiceTerminoBorda !== -1) {
+          // Desenha um retângulo único para o conjunto de chão's consecutivos
+          contexto.fillStyle = telaAtual.corBordaChao;
+          contexto.beginPath();
+          contexto.rect(
+            posicaoX,
+            posicaoY,
+            qtdeBlocosBorda * larguraBloco + 1,
+            espessuraBordaHorizontal + 1
+          );
+          contexto.fill();
+        }
+
+        let indiceInicioZerar = indiceInicioBorda;
+        let indiceTerminoZerar = indiceTerminoBorda;
+        let qtdeBlocosZerar = qtdeBlocosBorda;
+
+        // Caso não tenha nenhuma borda para ser desenhada nessa linha
+        if (indiceInicioBorda === -1 && indiceTerminoBorda === -1) {
+          indiceInicioZerar = 0;
+          indiceTerminoZerar = qtdeColunas;
+          qtdeBlocosZerar = 30;
+        }
+
+        // Substituindo trecho já desenhado para '0',
+        // para ser desconsiderado na próxima iteração
+        const trechoBorda = '0'.repeat(indiceInicioZerar + qtdeBlocosZerar);
+        const trechoDepoisBorda = blocosLinha.slice(indiceTerminoZerar + 1);
+        blocosLinha = trechoBorda + trechoDepoisBorda;
+      }
+    }
+
+    // Desenhando bordas inferiores
+    for (let linha = 0; linha < qtdeLinhas - 1; linha++) {
+      // Define onde o retângulo vai começar verticalmente
+      const posicaoY =
+        mapValue(linha + 1, 0, qtdeLinhas, 0, canvas.height) -
+        espessuraBordaHorizontal;
+
+      // Recupera apenas o trecho do grid que representa esta linha
+      const indiceInicio = linha * qtdeColunas;
+      const indiceTermino = (linha + 1) * qtdeColunas;
+      let blocosLinha = telaAtual.grid.slice(indiceInicio, indiceTermino);
+      // Substitui tudo que NÃO for 1 para 0
+      blocosLinha = blocosLinha.replaceAll(/[^1]/g, '0');
+
+      // Recupera apenas o trecho do grid que representa a linha abaixo
+      const indiceInicioBaixo = (linha + 1) * qtdeColunas;
+      const indiceTerminoBaixo = (linha + 2) * qtdeColunas;
+      let blocosLinhaBaixo = telaAtual.grid.slice(
+        indiceInicioBaixo,
+        indiceTerminoBaixo
+      );
+      // Substitui tudo que NÃO for 1 para 0
+      blocosLinhaBaixo = blocosLinhaBaixo.replaceAll(/[^1]/g, '0');
+
+      while (blocosLinha.includes('1')) {
+        let indiceInicioBorda = -1;
+        let indiceTerminoBorda = -1;
+        let anterioresTinhamBorda = false;
+
+        for (let coluna = 0; coluna < qtdeColunas; coluna++) {
+          const strBlocoAtual = blocosLinha[coluna];
+          const strBlocoBaixo = blocosLinhaBaixo[coluna];
+          if (strBlocoAtual === '1' && strBlocoBaixo === '0') {
+            if (indiceInicioBorda === -1) {
+              indiceInicioBorda = coluna;
+              anterioresTinhamBorda = true;
+            }
+            if (anterioresTinhamBorda) {
+              indiceTerminoBorda = coluna;
+            }
+          } else {
+            anterioresTinhamBorda = false;
+          }
+        }
+
+        // Calcula a quantidade de blocos de chão que o conjunto possui
+        const qtdeBlocosBorda = indiceTerminoBorda - indiceInicioBorda + 1;
+
+        // Define onde o retângulo vai começar horizontalmente
+        const posicaoX = mapValue(
+          indiceInicioBorda,
+          0,
+          qtdeColunas,
+          0,
+          canvas.width
+        );
+
+        if (indiceInicioBorda !== -1 && indiceTerminoBorda !== -1) {
+          // Desenha um retângulo único para o conjunto de chão's consecutivos
+          contexto.fillStyle = telaAtual.corBordaChao;
+          contexto.beginPath();
+          contexto.rect(
+            posicaoX,
+            posicaoY,
+            qtdeBlocosBorda * larguraBloco + 1,
+            espessuraBordaHorizontal + 1
+          );
+          contexto.fill();
+        }
+
+        let indiceInicioZerar = indiceInicioBorda;
+        let indiceTerminoZerar = indiceTerminoBorda;
+        let qtdeBlocosZerar = qtdeBlocosBorda;
+
+        // Caso não tenha nenhuma borda para ser desenhada nessa linha
+        if (indiceInicioBorda === -1 && indiceTerminoBorda === -1) {
+          indiceInicioZerar = 0;
+          indiceTerminoZerar = qtdeColunas;
+          qtdeBlocosZerar = 30;
+        }
+
+        // Substituindo trecho já desenhado para '0',
+        // para ser desconsiderado na próxima iteração
+        const trechoBorda = '0'.repeat(indiceInicioZerar + qtdeBlocosZerar);
+        const trechoDepoisBorda = blocosLinha.slice(indiceTerminoZerar + 1);
+        blocosLinha = trechoBorda + trechoDepoisBorda;
+      }
+    }
+
+    // Desenhando bordas da esquerda
+    for (let linha = 0; linha < qtdeLinhas; linha++) {
+      // Define onde o retângulo vai começar verticalmente
+      const posicaoY = mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
+
+      for (let coluna = 1; coluna < qtdeColunas; coluna++) {
+        const blocoAtual = telaAtual.grid[linha * qtdeColunas + coluna];
+        const blocoEsquerda =
+          telaAtual.grid[linha * qtdeColunas + (coluna - 1)];
+
+        if (blocoAtual === '1' && blocoEsquerda !== '1') {
+          // Define onde o retângulo vai começar verticalmente
+          const posicaoX = mapValue(coluna, 0, qtdeColunas, 0, canvas.width);
+
+          contexto.fillStyle = telaAtual.corBordaChao;
+          contexto.beginPath();
+          contexto.rect(
+            posicaoX,
+            posicaoY,
+            espessuraBordaVertical + 1,
+            alturaBloco + 1
+          );
+          contexto.fill();
+        }
+      }
+    }
+
+    // Desenhando bordas da direita
+    for (let linha = 0; linha < qtdeLinhas; linha++) {
+      // Define onde o retângulo vai começar verticalmente
+      const posicaoY = mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
+
+      for (let coluna = 0; coluna < qtdeColunas - 1; coluna++) {
+        const blocoAtual = telaAtual.grid[linha * qtdeColunas + coluna];
+        const blocoDireita = telaAtual.grid[linha * qtdeColunas + (coluna + 1)];
+
+        if (blocoAtual === '1' && blocoDireita !== '1') {
+          // Define onde o retângulo vai começar verticalmente
+          const posicaoX = mapValue(coluna, 0, qtdeColunas, 0, canvas.width);
+
+          contexto.fillStyle = telaAtual.corBordaChao;
+          contexto.beginPath();
+          contexto.rect(
+            posicaoX + larguraBloco - espessuraBordaVertical,
+            posicaoY,
+            espessuraBordaVertical + 1,
+            alturaBloco + 1
+          );
+          contexto.fill();
+        }
+      }
+    }
+
+    // Desenhando bordas
     contexto.fillStyle = telaAtual.corBordaChao;
 
     for (let linha = 0; linha < qtdeLinhas; linha++) {
       for (let coluna = 0; coluna < qtdeColunas; coluna++) {
         const indiceGrid = linha * qtdeColunas + coluna;
         const enumBloco = Number(telaAtual.grid[indiceGrid]);
-        const posicaoX = Math.round(
-          mapValue(coluna, 0, qtdeColunas, 0, canvas.width)
-        );
-        const posicaoY = Math.round(
-          mapValue(linha, 0, qtdeLinhas, 0, canvas.height)
-        );
+        const posicaoX = mapValue(coluna, 0, qtdeColunas, 0, canvas.width);
+        const posicaoY = mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
 
         if (enumBloco === tipoObjetoEnum.CHAO) {
-          let indiceGridCima = indiceGrid;
-          let indiceGridBaixo = indiceGrid;
-          let indiceGridEsquerda = indiceGrid;
-          let indiceGridDireita = indiceGrid;
           let indiceGridCimaEsquerda = indiceGrid;
           let indiceGridBaixoEsquerda = indiceGrid;
           let indiceGridCimaDireita = indiceGrid;
           let indiceGridBaixoDireita = indiceGrid;
-
-          if (linha - 1 >= 0) {
-            indiceGridCima = (linha - 1) * qtdeColunas + coluna;
-          }
-
-          if (linha + 1 < qtdeLinhas) {
-            indiceGridBaixo = (linha + 1) * qtdeColunas + coluna;
-          }
-
-          if (coluna - 1 >= 0) {
-            indiceGridEsquerda = linha * qtdeColunas + (coluna - 1);
-          }
-
-          if (coluna + 1 < qtdeColunas) {
-            indiceGridDireita = linha * qtdeColunas + (coluna + 1);
-          }
 
           if (linha - 1 >= 0 && coluna - 1 >= 0) {
             indiceGridCimaEsquerda = (linha - 1) * qtdeColunas + (coluna - 1);
@@ -275,58 +504,7 @@ const criarTela = (gameBoard) => {
             indiceGridBaixoDireita = (linha + 1) * qtdeColunas + (coluna + 1);
           }
 
-          if (Number(telaAtual.grid[indiceGridCima]) !== tipoObjetoEnum.CHAO) {
-            contexto.beginPath();
-            contexto.rect(
-              posicaoX,
-              posicaoY,
-              larguraBloco + 1,
-              espessuraBordaHorizontal + 1
-            );
-            contexto.fill();
-          }
-
-          if (Number(telaAtual.grid[indiceGridBaixo]) !== tipoObjetoEnum.CHAO) {
-            contexto.beginPath();
-            contexto.rect(
-              posicaoX,
-              posicaoY + (alturaBloco - espessuraBordaHorizontal),
-              larguraBloco + 1,
-              espessuraBordaHorizontal + 1
-            );
-            contexto.fill();
-          }
-
-          if (
-            Number(telaAtual.grid[indiceGridEsquerda]) !== tipoObjetoEnum.CHAO
-          ) {
-            contexto.beginPath();
-            contexto.rect(
-              posicaoX,
-              posicaoY,
-              espessuraBordaVertical + 1,
-              alturaBloco + 1
-            );
-            contexto.fill();
-          }
-
-          if (
-            Number(telaAtual.grid[indiceGridDireita]) !== tipoObjetoEnum.CHAO
-          ) {
-            contexto.beginPath();
-            contexto.rect(
-              posicaoX + (larguraBloco - espessuraBordaVertical),
-              posicaoY,
-              espessuraBordaVertical + 1,
-              alturaBloco + 1
-            );
-            contexto.fill();
-          }
-
-          if (
-            Number(telaAtual.grid[indiceGridCimaEsquerda]) !==
-            tipoObjetoEnum.CHAO
-          ) {
+          if (telaAtual.grid[indiceGridCimaEsquerda] !== '1') {
             contexto.beginPath();
             contexto.rect(
               posicaoX,
@@ -337,10 +515,7 @@ const criarTela = (gameBoard) => {
             contexto.fill();
           }
 
-          if (
-            Number(telaAtual.grid[indiceGridBaixoEsquerda]) !==
-            tipoObjetoEnum.CHAO
-          ) {
+          if (telaAtual.grid[indiceGridBaixoEsquerda] !== '1') {
             contexto.beginPath();
             contexto.rect(
               posicaoX,
@@ -351,10 +526,7 @@ const criarTela = (gameBoard) => {
             contexto.fill();
           }
 
-          if (
-            Number(telaAtual.grid[indiceGridCimaDireita]) !==
-            tipoObjetoEnum.CHAO
-          ) {
+          if (telaAtual.grid[indiceGridCimaDireita] !== '1') {
             contexto.beginPath();
             contexto.rect(
               posicaoX + (larguraBloco - espessuraBordaVertical),
@@ -365,10 +537,7 @@ const criarTela = (gameBoard) => {
             contexto.fill();
           }
 
-          if (
-            Number(telaAtual.grid[indiceGridBaixoDireita]) !==
-            tipoObjetoEnum.CHAO
-          ) {
+          if (telaAtual.grid[indiceGridBaixoDireita] !== '1') {
             contexto.beginPath();
             contexto.rect(
               posicaoX + (larguraBloco - espessuraBordaVertical),
