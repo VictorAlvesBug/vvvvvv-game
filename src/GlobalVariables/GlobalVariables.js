@@ -48,6 +48,10 @@ class GlobalVariables {
       return this.gravidadeUltimoCheckpoint;
     };
 
+    this.mapValue = (value, minIn, maxIn, minOut, maxOut) => {
+      return ((value - minIn) / (maxIn - minIn)) * (maxOut - minOut) + minOut;
+    };
+
     GlobalVariables.instancia = this;
   }
 }

@@ -2,10 +2,6 @@ import tipoObjetoEnum from './../Enums/tipoObjetoEnum.js';
 import GlobalVariables from './../GlobalVariables/GlobalVariables.js';
 import listaTelas from '../Telas/listaTelas.js';
 
-const mapValue = (value, minIn, maxIn, minOut, maxOut) => {
-  return ((value - minIn) / (maxIn - minIn)) * (maxOut - minOut) + minOut;
-};
-
 function regexIndexOf(texto, regex, offsetInicio) {
   var indice = texto.slice(offsetInicio).search(regex);
   return indice < 0 ? indice : indice + offsetInicio;
@@ -133,7 +129,7 @@ const criarTela = (gameBoard) => {
     // representados por um mesmo retângulo
     for (let linha = 0; linha < qtdeLinhas; linha++) {
       // Define onde o retângulo vai começar verticalmente
-      const posicaoY = mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
+      const posicaoY = globalVariables.mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
 
       // Recupera apenas o trecho do grid que representa esta linha de blocos da tela
       const indiceInicio = linha * qtdeColunas;
@@ -158,7 +154,7 @@ const criarTela = (gameBoard) => {
         const qtdeBlocosChao = indiceTerminoChao - indiceInicioChao + 1;
 
         // Define onde o retângulo vai começar horizontalmente
-        const posicaoX = mapValue(
+        const posicaoX = globalVariables.mapValue(
           indiceInicioChao,
           0,
           qtdeColunas,
@@ -198,12 +194,12 @@ const criarTela = (gameBoard) => {
 
     // Desenha blocos de espinho
     for (let linha = 0; linha < qtdeLinhas; linha++) {
-      const posicaoY = mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
+      const posicaoY = globalVariables.mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
 
       for (let coluna = 0; coluna < qtdeColunas; coluna++) {
         const indiceGrid = linha * qtdeColunas + coluna;
         const enumBloco = Number(telaAtual.grid[indiceGrid]);
-        const posicaoX = mapValue(coluna, 0, qtdeColunas, 0, canvas.width);
+        const posicaoX = globalVariables.mapValue(coluna, 0, qtdeColunas, 0, canvas.width);
 
         switch (enumBloco) {
           case tipoObjetoEnum.ESPINHO_CIMA:
@@ -247,7 +243,7 @@ const criarTela = (gameBoard) => {
     // Desenhando bordas superiores
     for (let linha = 1; linha < qtdeLinhas; linha++) {
       // Define onde o retângulo vai começar verticalmente
-      const posicaoY = mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
+      const posicaoY = globalVariables.mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
 
       // Recupera apenas o trecho do grid que representa esta linha
       const indiceInicio = linha * qtdeColunas;
@@ -291,7 +287,7 @@ const criarTela = (gameBoard) => {
         const qtdeBlocosBorda = indiceTerminoBorda - indiceInicioBorda + 1;
 
         // Define onde o retângulo vai começar horizontalmente
-        const posicaoX = mapValue(
+        const posicaoX = globalVariables.mapValue(
           indiceInicioBorda,
           0,
           qtdeColunas,
@@ -334,7 +330,7 @@ const criarTela = (gameBoard) => {
     for (let linha = 0; linha < qtdeLinhas - 1; linha++) {
       // Define onde o retângulo vai começar verticalmente
       const posicaoY =
-        mapValue(linha + 1, 0, qtdeLinhas, 0, canvas.height) -
+      globalVariables.mapValue(linha + 1, 0, qtdeLinhas, 0, canvas.height) -
         espessuraBordaHorizontal;
 
       // Recupera apenas o trecho do grid que representa esta linha
@@ -379,7 +375,7 @@ const criarTela = (gameBoard) => {
         const qtdeBlocosBorda = indiceTerminoBorda - indiceInicioBorda + 1;
 
         // Define onde o retângulo vai começar horizontalmente
-        const posicaoX = mapValue(
+        const posicaoX = globalVariables.mapValue(
           indiceInicioBorda,
           0,
           qtdeColunas,
@@ -422,7 +418,7 @@ const criarTela = (gameBoard) => {
     // Desenhando bordas da esquerda
     for (let linha = 0; linha < qtdeLinhas; linha++) {
       // Define onde o retângulo vai começar verticalmente
-      const posicaoY = mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
+      const posicaoY = globalVariables.mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
 
       for (let coluna = 1; coluna < qtdeColunas; coluna++) {
         const blocoAtual = telaAtual.grid[linha * qtdeColunas + coluna];
@@ -431,7 +427,7 @@ const criarTela = (gameBoard) => {
 
         if (blocoAtual === '1' && blocoEsquerda !== '1') {
           // Define onde o retângulo vai começar verticalmente
-          const posicaoX = mapValue(coluna, 0, qtdeColunas, 0, canvas.width);
+          const posicaoX = globalVariables.mapValue(coluna, 0, qtdeColunas, 0, canvas.width);
 
           contexto.fillStyle = telaAtual.corBordaChao;
           contexto.beginPath();
@@ -449,7 +445,7 @@ const criarTela = (gameBoard) => {
     // Desenhando bordas da direita
     for (let linha = 0; linha < qtdeLinhas; linha++) {
       // Define onde o retângulo vai começar verticalmente
-      const posicaoY = mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
+      const posicaoY = globalVariables.mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
 
       for (let coluna = 0; coluna < qtdeColunas - 1; coluna++) {
         const blocoAtual = telaAtual.grid[linha * qtdeColunas + coluna];
@@ -457,7 +453,7 @@ const criarTela = (gameBoard) => {
 
         if (blocoAtual === '1' && blocoDireita !== '1') {
           // Define onde o retângulo vai começar verticalmente
-          const posicaoX = mapValue(coluna, 0, qtdeColunas, 0, canvas.width);
+          const posicaoX = globalVariables.mapValue(coluna, 0, qtdeColunas, 0, canvas.width);
 
           contexto.fillStyle = telaAtual.corBordaChao;
           contexto.beginPath();
@@ -479,8 +475,8 @@ const criarTela = (gameBoard) => {
       for (let coluna = 0; coluna < qtdeColunas; coluna++) {
         const indiceGrid = linha * qtdeColunas + coluna;
         const enumBloco = Number(telaAtual.grid[indiceGrid]);
-        const posicaoX = mapValue(coluna, 0, qtdeColunas, 0, canvas.width);
-        const posicaoY = mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
+        const posicaoX = globalVariables.mapValue(coluna, 0, qtdeColunas, 0, canvas.width);
+        const posicaoY = globalVariables.mapValue(linha, 0, qtdeLinhas, 0, canvas.height);
 
         if (enumBloco === tipoObjetoEnum.CHAO) {
           let indiceGridCimaEsquerda = indiceGrid;
@@ -568,47 +564,56 @@ const criarTela = (gameBoard) => {
       const frameInimigo =
         (200 * inimigo.porcentagemCaminhoInicio + idFrame) % 200;
 
-      if (frameInimigo < 100) {
-        posicaoAtualInimigo.X = Math.round(
-          mapValue(
-            frameInimigo % 100,
-            0,
-            100,
-            inimigo.posicaoA.X,
-            inimigo.posicaoB.X
-          )
-        );
+        if(inimigo.funcaoPosicao)
+        {
+          let [x, y] = inimigo.funcaoPosicao(frameInimigo/200)
+          posicaoAtualInimigo.X = x;
+          posicaoAtualInimigo.Y = y;
+        }
+        else
+        {
+          if (frameInimigo < 100) {
+            posicaoAtualInimigo.X = Math.round(
+              globalVariables.mapValue(
+                frameInimigo % 100,
+                0,
+                100,
+                inimigo.posicaoA.X,
+                inimigo.posicaoB.X
+              )
+            );
 
-        posicaoAtualInimigo.Y = Math.round(
-          mapValue(
-            frameInimigo % 100,
-            0,
-            100,
-            inimigo.posicaoA.Y,
-            inimigo.posicaoB.Y
-          )
-        );
-      } else {
-        posicaoAtualInimigo.X = Math.round(
-          mapValue(
-            frameInimigo % 100,
-            0,
-            100,
-            inimigo.posicaoB.X,
-            inimigo.posicaoA.X
-          )
-        );
+            posicaoAtualInimigo.Y = Math.round(
+              globalVariables.mapValue(
+                frameInimigo % 100,
+                0,
+                100,
+                inimigo.posicaoA.Y,
+                inimigo.posicaoB.Y
+              )
+            );
+          } else {
+            posicaoAtualInimigo.X = Math.round(
+              globalVariables.mapValue(
+                frameInimigo % 100,
+                0,
+                100,
+                inimigo.posicaoB.X,
+                inimigo.posicaoA.X
+              )
+            );
 
-        posicaoAtualInimigo.Y = Math.round(
-          mapValue(
-            frameInimigo % 100,
-            0,
-            100,
-            inimigo.posicaoB.Y,
-            inimigo.posicaoA.Y
-          )
-        );
-      }
+            posicaoAtualInimigo.Y = Math.round(
+              globalVariables.mapValue(
+                frameInimigo % 100,
+                0,
+                100,
+                inimigo.posicaoB.Y,
+                inimigo.posicaoA.Y
+              )
+            );
+          }
+        }
 
       contexto.fillStyle = telaAtual.corInimigo;
       contexto.beginPath();
